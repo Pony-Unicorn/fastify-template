@@ -13,7 +13,7 @@ declare module 'fastify' {
 export const autoConfig = (fastify: FastifyInstance) => {
   return {
     uri: fastify.config.DATABASE_URL,
-    connectionLimit: 50
+    connectionLimit: 20
   }
 }
 
