@@ -107,7 +107,8 @@ src/
 
 ## 安全防护
 
-- 尽量使用 cloudflare 代理流量，并且只允许 cf ip 访问，拒绝其他流量 https://www.cloudflare.com/zh-cn/ips/
+- 尽量使用 cloudflare 代理流量，并且在云服务提供商设置防火墙只允许 cf ip 访问
+  - cloudflare ips https://www.cloudflare.com/zh-cn/ips/
 
 ## ✅ Todo List
 
