@@ -105,6 +105,10 @@ src/
 
 > 这些依赖尚未包含在项目中，可根据实际需求通过 `pnpm add 包名` 安装使用。
 
+## 安全防护
+
+- 尽量使用 cloudflare 代理流量，并且只允许 cf ip 访问，拒绝其他流量 https://www.cloudflare.com/zh-cn/ips/
+
 ## ✅ Todo List
 
 - [ ] husky
