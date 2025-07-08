@@ -149,3 +149,7 @@ yarn.lock
 
 # uploaded files
 uploads/tasks/*
+
+# compiled test files (we use tsx to run .ts directly)
+test/**/*.js
+test/**/*.js.map

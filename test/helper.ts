@@ -5,7 +5,7 @@ import { FastifyInstance, LightMyRequestResponse } from 'fastify'
 
 import { build as buildApplication } from 'fastify-cli/helper.js'
 
-import { options as serverOptions } from '../src/app.js'
+import { options as serverOptions } from '../dist/src/app.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -14,13 +14,14 @@ declare module 'fastify' {
   }
 }
 
-const AppPath = path.join(import.meta.dirname, '../src/app.ts')
+const AppPath = path.join(import.meta.dirname, '../dist/src/app.js')
 
 // Fill in this config with all the configurations
 // needed for testing the application
 export function config() {
   return {
-    skipOverride: true // Register our application with fastify-plugin
+    skipOverride: true, // Register our application with fastify-plugin
+    typescript: true
   }
 }
 

@@ -10,7 +10,7 @@ it('should correctly handle CORS preflight requests', async (t) => {
     method: 'OPTIONS',
     url: '/',
     headers: {
-      Origin: 'http://example.com',
+      Origin: 'http://localhost:3000',
       'Access-Control-Request-Method': 'GET',
       'Access-Control-Request-Headers': 'Content-Type'
     }

@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import { test } from 'node:test'
 import Fastify from 'fastify'
 
-import scryptPlugin from '../../src/plugins/app/password-manager.js'
+import scryptPlugin from '../../dist/src/plugins/app/password-manager.js'
 
 test('scrypt works standalone', async (t) => {
   const app = Fastify()
