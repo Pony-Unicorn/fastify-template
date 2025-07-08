@@ -1,8 +1,9 @@
 import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 
+import ERROR_CODES from '../../../config/error-codes.js'
 import { EmailSchema, ResponseJsonSchema } from '../../../schemas/common.js'
 import { UpdateCredentialsSchema } from '../../../schemas/users.js'
-import { toErrorResponse, toSuccessResponse } from '../../../utils/response.js'
+import { sendError, toSuccessResponse } from '../../../utils/response.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { usersRepository, passwordManager, log } = fastify
@@ -74,6 +75,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
             })
           ]),
           401: Type.Object({
+            statusCode: Type.Number(),
             message: Type.String()
           })
         }
@@ -86,11 +88,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
       if (user.isErr()) {
         log.error(`Email ${request.query.email}, Error ${user.error.message}`)
-        return reply.code(404).send({ message: 'User does not exist.' })
+
+        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
       }
 
       if (!user.value) {
-        return toErrorResponse(-1, 'User does not exist.')
+        return sendError(reply, ERROR_CODES.USER_NOT_FOUND)
       }
 
       return toSuccessResponse(user.value)

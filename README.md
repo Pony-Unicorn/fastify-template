@@ -29,18 +29,30 @@ pnpm dev
 
 ## 📐 规范
 
-- 所有提交前将自动执行 lint 和格式化检查。
+- 提交前执行 lint 或 format 进行代码格式化
 - 使用 TypeBox + @fastify/type-provider-typebox 来统一类型和验证。
-- 所有 SQL 构建使用 drizzle-orm，避免手写 SQL 字符串。
+- SQL 构建器使用 drizzle-orm 框架，避免手写 SQL 语句。
+- API 接口设计遵循 RESTful API 标准
+  - 参考[RESTful API 设计参考文献列表](https://github.com/aisuhua/restful-api-design-references)
 - 认证采用 `Authorization: <type> <credentials>` 方式
   - Bearer、tma、personal_sign
 - reply(响应):
-  - 简单化：查询：读操作强烈建议使用 get 请求。更新、创建、删除：写操作强烈建议使用 post 请求
-  - 尽量实现 restfulApi 标准，返回格式 {statusCode,message,result}
-  - 尽量使用 Async Await 形式
+  - 尽量使用 async/await 形式
   - 返回响应
     - 常规接口直接用 return { statusCode: 200, message: 'OK', result: data } 这种纯对象返回
-    - 特殊需求（比如非200状态码或者特殊头部）时，才用 reply.status(code).send() 方式手动控制响应
+    - 特殊需求（比如非200/201状态码或特殊 header）时，使用 reply.status(code).send() 手动控制响应
+- 状态码
+  - 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Status
+  - 常见的 HTTP 状态码, 使用 https://github.com/prettymuchbryce/http-status-codes
+
+    > 只有来自客户端的请求被正确的处理后才能返回 2xx 的响应，所以当 API 返回 2xx 类型的状态码时，前端必须认定该请求已处理成功。
+
+  - 必须强调的是，所有 API 一定不可返回 1xx 类型的状态码。当 API 发生错误时，必须返回错误的详细信息。
+  - 状态码规则
+    - 使用 HTTP 状态码 + 三位业务码 格式，如 403002 代表用户已禁用, 也可简化处理不加业务码
+    - 200 最常见的状态码，在所有成功的 GET 请求中，必须返回此状态码
+    - 201 当服务器创建数据成功时，返回此状态码。常见的场景是使用 POST 提交用户信息，如：添加了新用户、上传了图片、创建了新活动等，也可以选择在用户创建成功后返回新用户的数据
+
 - schema: 尽量写好 schema, 使用 @sinclair/typebox 库
 - routes:
   - 路由目录，一个文件为一个模块
@@ -114,3 +126,4 @@ src/
 
 - [ ] husky
 - [ ] test 测试
+- [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen

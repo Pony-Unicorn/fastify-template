@@ -1,3 +1,8 @@
+import { type FastifyReply } from 'fastify'
+
+import { getReasonPhrase, ReasonPhrases, StatusCodes } from 'http-status-codes'
+
+import { ErrorEntry } from '../config/error-codes.js'
 import { ResponseJson } from '../schemas/common.js'
 
 // 通用响应结构类型
@@ -10,29 +15,22 @@ export type ApiResponse<T> = Omit<ResponseJson, 'result'> & {
  * @param data 任意类型的数据
  * @returns ApiResponse<T>
  */
-export function toSuccessResponse<T>(data: T): ApiResponse<T> {
+export function toSuccessResponse<T>(
+  data: T,
+  statusKey: 'OK' | 'CREATED' = 'OK'
+): ApiResponse<T> {
   return {
-    statusCode: 200,
-    message: 'OK',
+    statusCode: StatusCodes[statusKey],
+    message: ReasonPhrases[statusKey],
     result: data
   }
 }
 
-/**
- * 返回错误响应
- * @param statusCode HTTP 状态码，默认 500
- * @param message 错误信息
- * @returns ApiResponse<null>
- */
-export function toErrorResponse(
-  statusCode: number = 500,
-  message: string = 'Internal Server Error'
-): ApiResponse<null> {
-  return {
-    statusCode,
-    message,
-    result: null
-  }
+export function sendError(reply: FastifyReply, error: ErrorEntry) {
+  return reply.code(error.__httpCode).send({
+    statusCode: error.statusCode ?? error.__httpCode,
+    message: error.message ?? getReasonPhrase(error.__httpCode)
+  })
 }
 
 /**

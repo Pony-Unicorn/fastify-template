@@ -1,1 +1,2 @@
-export const version = '0.0.1' // a.b.c
+// a.b.c
+export const version = '0.0.1'
