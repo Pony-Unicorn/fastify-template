@@ -1,7 +1,11 @@
 import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 
 import ERROR_CODES from '../../../config/error-codes.js'
-import { EmailSchema, ResponseJsonSchema } from '../../../schemas/common.js'
+import {
+  DefaultResponseJsonSchema,
+  EmailSchema,
+  ResponseJsonSchema
+} from '../../../schemas/common.js'
 import { UpdateCredentialsSchema } from '../../../schemas/users.js'
 import { sendError, toSuccessResponse } from '../../../utils/response.js'
 
@@ -74,10 +78,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
               })
             })
           ]),
-          401: Type.Object({
-            statusCode: Type.Number(),
-            message: Type.String()
-          })
+          default: DefaultResponseJsonSchema
         }
       }
     },

@@ -15,6 +15,11 @@ export const DateTimeSchema = Type.String({ format: 'date-time' })
 
 export const IdSchema = Type.Integer({ minimum: 1 })
 
+export const DefaultResponseJsonSchema = Type.Object({
+  statusCode: Type.Number(),
+  message: Type.String()
+})
+
 // 响应体
 export const ResponseJsonSchema = Type.Object({
   statusCode: Type.Number({
