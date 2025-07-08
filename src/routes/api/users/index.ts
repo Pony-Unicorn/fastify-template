@@ -6,11 +6,65 @@ import {
   EmailSchema,
   ResponseJsonSchema
 } from '../../../schemas/common.js'
-import { UpdateCredentialsSchema } from '../../../schemas/users.js'
+import {
+  RegisterSchema,
+  UpdateCredentialsSchema
+} from '../../../schemas/users.js'
 import { sendError, toSuccessResponse } from '../../../utils/response.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { usersRepository, passwordManager, log } = fastify
+
+  fastify.post(
+    '/register',
+    {
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: '5 minutes'
+        }
+      },
+      schema: {
+        body: RegisterSchema,
+        response: {
+          201: ResponseJsonSchema,
+          default: DefaultResponseJsonSchema
+        }
+      }
+    },
+    async function (request, reply) {
+      const { email, username, password, inviterCode } = request.body
+
+      // 检查用户是否已存在
+      const existingUser = await usersRepository.findByEmail(email)
+      if (existingUser.isErr()) {
+        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
+      }
+
+      if (existingUser.value) {
+        return sendError(reply, ERROR_CODES.USER_ALREADY_EXISTS)
+      }
+
+      // 加密密码
+      const hashedPassword = await passwordManager.hash(password)
+
+      // 创建用户
+      const createResult = await usersRepository.createUser({
+        email,
+        username,
+        password: hashedPassword,
+        inviterCode
+      })
+
+      if (createResult.isErr()) {
+        log.error(`Failed to create user: ${createResult.error.message}`)
+        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
+      }
+
+      reply.code(201)
+      return toSuccessResponse({ message: 'User registered successfully' })
+    }
+  )
   fastify.put(
     '/update-password',
     {

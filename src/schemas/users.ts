@@ -14,3 +14,13 @@ export const UpdateCredentialsSchema = Type.Object({
   currentPassword: PasswordSchema,
   newPassword: PasswordSchema
 })
+
+export const RegisterSchema = Type.Object({
+  email: EmailSchema,
+  username: Type.String({
+    minLength: 2,
+    maxLength: 50
+  }),
+  password: PasswordSchema,
+  inviterCode: Type.Optional(Type.Number({ minimum: 1 }))
+})

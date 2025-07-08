@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 import { usersTable } from '../../../db/schema.js'
 import { type MySqlDBTransaction } from '../../../db/types.js'
@@ -39,6 +39,26 @@ export function createUsersRepository(fastify: FastifyInstance) {
           .update(usersTable)
           .set({ password: hashedPassword })
           .where(eq(usersTable.email, email))
+      )
+    },
+
+    async createUser(userData: {
+      email: string
+      username: string
+      password: string
+      inviterCode?: number
+    }) {
+      return toResult(
+        db
+          .insert(usersTable)
+          .values({
+            email: userData.email,
+            username: userData.username,
+            password: userData.password,
+            inviterCode: userData.inviterCode,
+            createdAt: sql`UNIX_TIMESTAMP()`,
+            updatedAt: sql`UNIX_TIMESTAMP()`
+          })
       )
     }
   }

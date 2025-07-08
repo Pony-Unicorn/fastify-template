@@ -37,6 +37,11 @@ const ERROR_CODES = {
     statusCode: 404001,
     message: 'User not found'
   },
+  USER_ALREADY_EXISTS: {
+    __httpCode: StatusCodes.CONFLICT,
+    statusCode: 409001,
+    message: 'User already exists'
+  },
   INTERNAL_ERROR: {
     __httpCode: StatusCodes.INTERNAL_SERVER_ERROR,
     statusCode: 500,
