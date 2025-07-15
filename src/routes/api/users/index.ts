@@ -62,7 +62,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       reply.code(201)
-      return toSuccessResponse({ message: 'User registered successfully' })
+      return toSuccessResponse(null)
     }
   )
   fastify.put(
