@@ -49,16 +49,14 @@ export function createUsersRepository(fastify: FastifyInstance) {
       inviterCode?: number
     }) {
       return toResult(
-        db
-          .insert(usersTable)
-          .values({
-            email: userData.email,
-            username: userData.username,
-            password: userData.password,
-            inviterCode: userData.inviterCode,
-            createdAt: sql`UNIX_TIMESTAMP()`,
-            updatedAt: sql`UNIX_TIMESTAMP()`
-          })
+        db.insert(usersTable).values({
+          email: userData.email,
+          username: userData.username,
+          password: userData.password,
+          inviterCode: userData.inviterCode,
+          createdAt: sql`UNIX_TIMESTAMP()`,
+          updatedAt: sql`UNIX_TIMESTAMP()`
+        })
       )
     }
   }
