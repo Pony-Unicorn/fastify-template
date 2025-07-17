@@ -21,7 +21,7 @@ export const toResult = <T>(promise: Promise<T>) =>
 /**
  * 包装同步函数，返回 Result
  */
-export const safeSync = <T>(fn: () => T): Result<T, Error> => {
+export const toSyncResult = <T>(fn: () => T): Result<T, Error> => {
   try {
     return ok(fn())
   } catch (e: unknown) {
@@ -32,7 +32,7 @@ export const safeSync = <T>(fn: () => T): Result<T, Error> => {
 /**
  * 更灵活的包装器，可注入错误转换、日志等
  */
-export const wrapResult = async <T>(
+export const toResultWithHooks = async <T>(
   fn: () => Promise<T>,
   onError?: (e: unknown) => void,
   toCustomError?: (e: unknown) => Error
