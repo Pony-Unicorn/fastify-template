@@ -52,15 +52,34 @@ pnpm dev
     - 使用 HTTP 状态码 + 三位业务码 格式，如 403002 代表用户已禁用, 也可简化处理不加业务码
     - 200 最常见的状态码，在所有成功的 GET 请求中，必须返回此状态码
     - 201 当服务器创建数据成功时，返回此状态码。常见的场景是使用 POST 提交用户信息，如：添加了新用户、上传了图片、创建了新活动等，也可以选择在用户创建成功后返回新用户的数据
+  - 判断标准：看你的controller方法能不能正常执行完
+    - ✅ 200的情况：
+      - 查到用户了 → return user
+      - 没查到用户 → return null 或 { users: [] }
+      - 转账余额不足 → return { success: false, msg: '余额不足' }
+    - ❌ 4xx/5xx的情况：
+      - 参数格式错误 → 还没开始查就发现问题 → 400
+      - 没登录 → 压根不让你查 → 401
+      - 数据库连不上 → 查询执行失败 → 500
+  - 总结
+    - 参数格式错误 → HTTP 400 + 自定义错误码
+    - 认证失败 → HTTP 401 + 自定义错误码
+    - 资源不存在 → HTTP 404 + 自定义错误码
+    - 业务逻辑失败 → HTTP 200 + 自定义错误码
 
 - schema: 尽量写好 schema, 使用 @sinclair/typebox 库
 - routes:
   - 路由目录，一个文件为一个模块
   - controller 耦合到 route 中，service 耦合到 plugins 中
+- 配置文件和常量统一放到 config 目录
+- sql 数据库文件，<编号>-<模块>-<内容类型>.sql
+  - 001-schema.sql
+  - 002-post-schema.sql
+  - 003-post-seed.sql
+  - 004-post-indexes.sql
 - log 日志
   - 如果使用文件记录，使用 logrotate 轮换日志，大部分系统默认安装
   - 推荐线上程序日志路径 /var/log/app-name.log
-- 配置文件和常量统一放到 config 目录
 
 ## 📁 项目目录结构
 
