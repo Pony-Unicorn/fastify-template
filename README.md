@@ -34,6 +34,7 @@ pnpm dev
 - SQL 构建器使用 drizzle-orm 框架，避免手写 SQL 语句。
 - API 接口设计遵循 RESTful API 标准
   - 参考[RESTful API 设计参考文献列表](https://github.com/aisuhua/restful-api-design-references)
+  - 参考[good API design](https://www.seangoedecke.com/good-api-design/)
 - 认证采用 `Authorization: <type> <credentials>` 方式
   - Bearer、tma、personal_sign
 - reply(响应):
@@ -71,6 +72,7 @@ pnpm dev
 - routes:
   - 路由目录，一个文件为一个模块
   - controller 耦合到 route 中，service 耦合到 plugins 中
+  - 命名方式为 kebab-case，示例 /portfolio-tracker，可读性高、SEO 友好、Web 标准
 - 配置文件和常量统一放到 config 目录
 - sql 数据库文件，<编号>-<模块>-<内容类型>.sql
   - 001-schema.sql
