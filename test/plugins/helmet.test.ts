@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { it, describe } from 'node:test'
+import { describe, it } from 'node:test'
 
 import { build } from '../helper.js'
 

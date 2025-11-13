@@ -6,7 +6,7 @@ import { build } from '../helper.js'
 it('should be rate limited', async (t) => {
   // Set a low rate limit for testing
   process.env.RATE_LIMIT_MAX = '4'
-  
+
   const app = await build(t)
 
   // Make requests up to the rate limit (4)

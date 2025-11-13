@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { it, describe } from 'node:test'
+import { describe, it } from 'node:test'
 
 import { build } from '../helper.js'
 
@@ -14,7 +14,10 @@ describe('API Routes', () => {
 
     assert.strictEqual(res.statusCode, 200)
     const payload = JSON.parse(res.payload)
-    assert.strictEqual(payload.message, 'Welcome to the official fastify template!')
+    assert.strictEqual(
+      payload.message,
+      'Welcome to the official fastify template!'
+    )
   })
 
   it('should return 404 for unknown API endpoints', async (t) => {

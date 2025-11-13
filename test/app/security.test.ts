@@ -1,5 +1,5 @@
 import assert from 'node:assert'
-import { it, describe } from 'node:test'
+import { describe, it } from 'node:test'
 
 import { build } from '../helper.js'
 
@@ -13,7 +13,7 @@ describe('Security', () => {
     })
 
     assert.strictEqual(res.statusCode, 200)
-    
+
     // Check for security headers from helmet
     assert.ok(res.headers['x-frame-options'])
     assert.ok(res.headers['x-content-type-options'])
@@ -39,7 +39,7 @@ describe('Security', () => {
   it('should enforce rate limiting on multiple requests', async (t) => {
     // Set a low rate limit for testing
     process.env.RATE_LIMIT_MAX = '2'
-    
+
     const app = await build(t)
 
     // First two requests should succeed
