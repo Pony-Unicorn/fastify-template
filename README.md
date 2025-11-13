@@ -143,6 +143,12 @@ src/
 - 尽量使用 cloudflare 代理流量，并且在云服务提供商设置防火墙只允许 cf ip 访问
   - cloudflare ips https://www.cloudflare.com/zh-cn/ips/
 
+## 常用命令
+
+- 查看当前有哪些包已过时 pnpm outdated
+- 升级到 semver 范围内的最新版本 pnpm up
+- 将依赖升级到最新版本 pnpm up -L axios
+
 ## ✅ Todo List
 
 - [ ] husky
