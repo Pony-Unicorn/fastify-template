@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { FastifyError, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 
 export interface AppOptions
@@ -69,9 +69,10 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
   })
 
   fastify.setErrorHandler((err, request, reply) => {
+    const error = err as FastifyError
     fastify.log.error(
       {
-        err,
+        err: error,
         request: {
           method: request.method,
           url: request.url,
@@ -82,11 +83,11 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
       'Unhandled error occurred'
     )
 
-    reply.code(err.statusCode ?? 500)
+    reply.code(error.statusCode ?? 500)
 
     let message = 'Internal Server Error'
-    if (err.statusCode && err.statusCode < 500) {
-      message = err.message
+    if (error.statusCode && error.statusCode < 500) {
+      message = error.message
     }
 
     return { message }

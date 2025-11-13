@@ -36,7 +36,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { email, username, password, inviterCode } = request.body
 
       // 检查用户是否已存在
-      const existingUser = await usersRepository.findByEmail(email)
+      const existingUser = await usersRepository.findByEmail(email!)
       if (existingUser.isErr()) {
         return sendError(reply, ERROR_CODES.DATABASE_ERROR)
       }
@@ -46,12 +46,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       // 加密密码
-      const hashedPassword = await passwordManager.hash(password)
+      const hashedPassword = await passwordManager.hash(password!)
 
       // 创建用户
       const createResult = await usersRepository.createUser({
-        email,
-        username,
+        email: email!,
+        username: username!,
         password: hashedPassword,
         inviterCode
       })
@@ -78,6 +78,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         body: UpdateCredentialsSchema,
         response: {
           200: ResponseJsonSchema,
+          400: Type.Object({
+            message: Type.String()
+          }),
           401: Type.Object({
             message: Type.String()
           })
@@ -87,14 +90,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async function (request, reply) {
       const { newPassword, currentPassword, email } = request.body
 
-      const user = await usersRepository.findByEmail(email)
+      const user = await usersRepository.findByEmail(email!)
 
       if (user.isErr() || !user.value) {
         return reply.code(401).send({ message: 'User does not exist.' })
       }
 
       const isPasswordValid = await passwordManager.compare(
-        currentPassword,
+        currentPassword!,
         user.value.password
       )
 
@@ -108,8 +111,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         })
       }
 
-      const hashedPassword = await passwordManager.hash(newPassword)
-      await usersRepository.updatePassword(email, hashedPassword)
+      const hashedPassword = await passwordManager.hash(newPassword!)
+      await usersRepository.updatePassword(email!, hashedPassword)
 
       return toSuccessResponse(null)
     }
@@ -123,7 +126,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           email: EmailSchema
         }),
         response: {
-          200: Type.Composite([
+          200: Type.Intersect([
             ResponseJsonSchema,
             Type.Object({
               result: Type.Object({
