@@ -16,14 +16,13 @@
 ## 🚀 快速开始
 
 ```bash
-# 克隆项目
-git clone https://github.com/Pony-Unicorn/fastify-template.git my-project
+# Clone template
+pnpm dlx degit Pony-Unicorn/fastify-template my-project
 cd my-project
 
-# 安装依赖（推荐使用 pnpm）
 pnpm i
 
-# 启动开发模式
+# Development
 pnpm dev
 ```
 
