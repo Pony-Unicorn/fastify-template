@@ -50,7 +50,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - `plugins/app/` - 应用业务插件（users repository、password manager）
    - `routes/api/` - API 路由实现
    - `schemas/` - TypeBox 验证和序列化 schema
-   - `db/` - Drizzle ORM 数据库模式和类型
+   - `models/` - Drizzle ORM 数据库模式和类型
    - `config/` - 应用配置和常量
    - `utils/` - 通用工具函数
 

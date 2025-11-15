@@ -3,8 +3,8 @@ import fp from 'fastify-plugin'
 
 import { eq, sql } from 'drizzle-orm'
 
-import { usersTable } from '../../../db/schema.js'
-import { type MySqlDBTransaction } from '../../../db/types.js'
+import { usersTable } from '../../../models/schema.js'
+import { type MySqlDBTransaction } from '../../../models/types.js'
 import { toResult } from '../../../utils/result.js'
 
 declare module 'fastify' {

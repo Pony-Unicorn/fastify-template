@@ -1,3 +1,10 @@
+-- ============================================
+-- 文件: 000-init.sql
+-- 描述: 初始化数据库表结构
+-- 表: users,
+-- 创建时间: 2025-01-15
+-- 作者: Pony
+-- ============================================
 CREATE TABLE
   IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

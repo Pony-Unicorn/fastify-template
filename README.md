@@ -73,20 +73,24 @@ pnpm dev
   - controller 耦合到 route 中，service 耦合到 plugins 中
   - 命名方式为 kebab-case，示例 /portfolio-tracker，可读性高、SEO 友好、Web 标准
 - 配置文件和常量统一放到 config 目录
-- sql 数据库文件，<编号>-<模块>-<内容类型>.sql
-  - 001-schema.sql
-  - 002-post-schema.sql
-  - 003-post-seed.sql
-  - 004-post-indexes.sql
+- sql 文件，<三位数编号>-<语义化文件名>.sql 在文件头部要明确写清楚注释
+  - 000-init.sql # 初始化、最原始的 sql 文件
+  - 001-create-posts-table.sql # 新建表
+  - 002-create-posts-indexes.sql # 创建索引
+  - 003-posts-seed.sql
 - log 日志
   - 如果使用文件记录，使用 logrotate 轮换日志，大部分系统默认安装
   - 推荐线上程序日志路径 /var/log/app-name.log
+
+## 命名
+
+- Repository 指与数据库交互的层，用来封装数据的访问逻辑，例如 userRepository
 
 ## 📁 项目目录结构
 
 ```text
 src/
-├── db/                      # 数据库相关
+├── models/                      # 数据库相关
 │   ├── schema/              # Drizzle 声明的模式，如果表比较多可拆分多文件
 │   ├── types.ts             # 定义 db 相关的类型文件
 │   └── schema.ts            # Drizzle 声明的模式，最常见方法是将所有表放入一个文件中
@@ -97,11 +101,11 @@ src/
 │   └── reward.ts            # VIP 等级、奖励比例
 
 ├── plugins/                 # Plugins Folder。fastify 核心思想，一切皆插件
-│   ├── app/                 # 应用内部自封装的插件，包括数据库 xxx-repository、xxx-service等
+│   ├── app/                 # 内部插件：计划任务 xxx-repository、xxx-service 等
 │   ├── external/            # 外部的、第三方插件、例如 cors、env、数据库等
 │   └── other/               # 其他插件
 
-├── routes/                  # 所有路由，尽量简化 controller、service、model
+├── routes/                  # 路由（controller），service 和 model 放到 repository 中
 │   ├── api/                 # api 实现
 │   └── home.ts              # 根路由
 
@@ -150,6 +154,7 @@ src/
 
 ## ✅ Todo List
 
+- [ ] 添加迁表脚本
 - [ ] husky
 - [ ] test 测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
