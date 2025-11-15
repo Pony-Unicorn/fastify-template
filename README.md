@@ -79,7 +79,7 @@ pnpm dev
   - 002-create-posts-indexes.sql # 创建索引
   - 003-posts-seed.sql
 - log 日志
-  - 如果使用文件记录，使用 logrotate 轮换日志，大部分系统默认安装
+  - 如使用文件记录，请使用 logrotate 轮换日志，linux 默认安装
   - 推荐线上程序日志路径 /var/log/app-name.log
 
 ## 命名
@@ -148,13 +148,48 @@ src/
 
 ## 常用命令
 
+### 包管理
+
 - 查看当前有哪些包已过时 pnpm outdated
 - 升级到 semver 范围内的最新版本 pnpm up
 - 将依赖升级到最新版本 pnpm up -L axios
 
+### 数据库操作
+
+```bash
+# 1. 创建数据库
+pnpm run db:create
+
+# 2. 初始化表结构（执行 000-init.sql）
+pnpm run db:init
+
+# 3. 运行数据库迁移（执行所有未执行的 SQL 文件）
+pnpm run db:migrate
+
+# 4. 插入种子数据
+pnpm run db:seed
+```
+
+**数据库迁移说明：**
+
+- 迁移文件位于 `sql/` 目录，命名格式：`<三位数编号>-<语义化文件名>.sql`
+- 迁移按文件名顺序执行（000、001、002...）
+- 系统会自动追踪已执行的迁移，避免重复执行
+- 需要在 `.env` 文件中设置相应的环境变量（`CAN_MIGRATE_DATABASE=1`）才能运行迁移
+
+**迁移文件示例：**
+
+```
+sql/
+├── 000-init.sql                    # 初始化基础表
+├── 001-create-posts-table.sql     # 创建文章表
+├── 002-create-posts-indexes.sql   # 添加文章表索引
+└── 003-posts-seed.sql              # 其他迁移...
+```
+
 ## ✅ Todo List
 
-- [ ] 添加迁表脚本
+- [x] 添加迁表脚本
 - [ ] husky
 - [ ] test 测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
