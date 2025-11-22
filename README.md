@@ -127,17 +127,18 @@ src/
 
 以下是一些在实际开发中常用且优秀的插件和工具库：
 
-| 包名                                                                   | 说明                                              |
-| ---------------------------------------------------------------------- | ------------------------------------------------- |
-| [`@fastify/auth`](https://github.com/fastify/fastify-auth)             | 多重认证策略支持，可组合多个鉴权方案              |
-| [`@fastify/jwt`](https://github.com/fastify/fastify-jwt)               | JWT 签发与验证插件，适合构建登录系统或 API 鉴权   |
-| [`@fastify/cookie`](https://github.com/fastify/fastify-cookie)         | 用于处理 HTTP Cookie，配合认证或 session 常用     |
-| [`@fastify/session`](https://github.com/fastify/session)               | 基于 Cookie 的会话管理插件                        |
-| [`@fastify/multipart`](https://github.com/fastify/fastify-multipart)   | 支持文件上传，支持多文件、流式传输                |
-| [`@fastify/static`](https://github.com/fastify/fastify-static)         | 静态文件服务，适合部署前端资源或文件下载          |
-| [`@fastify/swagger`](https://github.com/fastify/fastify-swagger)       | 自动生成 OpenAPI 规范的 API 文档                  |
-| [`@fastify/swagger-ui`](https://github.com/fastify/fastify-swagger-ui) | 配合 `@fastify/swagger` 展示 Swagger UI 界面      |
-| [`csv-stringify`](https://csv.js.org/stringify/)                       | 将数据导出为 CSV 格式，适用于报表、数据导出等场景 |
+| 包名                                                                             | 说明                                              |
+| -------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [`@fastify/auth`](https://github.com/fastify/fastify-auth)                       | 多重认证策略支持，可组合多个鉴权方案              |
+| [`@fastify/jwt`](https://github.com/fastify/fastify-jwt)                         | JWT 签发与验证插件，适合构建登录系统或 API 鉴权   |
+| [`@fastify/cookie`](https://github.com/fastify/fastify-cookie)                   | 用于处理 HTTP Cookie，配合认证或 session 常用     |
+| [`@fastify/session`](https://github.com/fastify/session)                         | 基于 Cookie 的会话管理插件                        |
+| [`@fastify/multipart`](https://github.com/fastify/fastify-multipart)             | 支持文件上传，支持多文件、流式传输                |
+| [`@fastify/static`](https://github.com/fastify/fastify-static)                   | 静态文件服务，适合部署前端资源或文件下载          |
+| [`@fastify/swagger`](https://github.com/fastify/fastify-swagger)                 | 自动生成 OpenAPI 规范的 API 文档                  |
+| [`@fastify/swagger-ui`](https://github.com/fastify/fastify-swagger-ui)           | 配合 `@fastify/swagger` 展示 Swagger UI 界面      |
+| [`@fastify/request-context`](https://github.com/fastify/fastify-request-context) | 不传 req 也能拿到本次请求数据，且并发不串台       |
+| [`csv-stringify`](https://csv.js.org/stringify/)                                 | 将数据导出为 CSV 格式，适用于报表、数据导出等场景 |
 
 > 这些依赖尚未包含在项目中，可根据实际需求通过 `pnpm add 包名` 安装使用。
 
@@ -189,7 +190,10 @@ sql/
 
 ## ✅ Todo List
 
-- [x] 添加迁表脚本
 - [ ] husky
-- [ ] test 测试
+- [ ] fastily 框架错误统一输出
+- [ ] 实现分页功能
+
+- [ ] 认证系统
+- [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen

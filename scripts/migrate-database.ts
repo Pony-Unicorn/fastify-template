@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -33,9 +33,7 @@ async function migrate() {
 
     // 获取已执行的迁移
     const executedMigrations = await getExecutedMigrations(connection)
-    const executedFilenames = new Set(
-      executedMigrations.map((m) => m.filename)
-    )
+    const executedFilenames = new Set(executedMigrations.map((m) => m.filename))
 
     // 过滤出未执行的迁移
     const pendingMigrations = sqlFiles.filter(
@@ -116,10 +114,9 @@ async function executeMigration(connection: Connection, filename: string) {
     }
 
     // 记录迁移
-    await connection.execute(
-      'INSERT INTO migrations (filename) VALUES (?)',
-      [filename]
-    )
+    await connection.execute('INSERT INTO migrations (filename) VALUES (?)', [
+      filename
+    ])
 
     await connection.commit()
     console.log(`✓ Migration ${filename} completed successfully`)

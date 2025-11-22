@@ -7,6 +7,7 @@ export interface AppOptions
     Partial<AutoloadPluginOptions> {}
 // Pass --options via CLI arguments in command to enable these options.
 export const options: AppOptions = {
+  trustProxy: true, // Cloudflare/nginx proxy must be enabled. If not, it must be disabled.
   logger: {
     level: process.env.LOG_LEVEL || 'info',
     transport: {

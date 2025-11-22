@@ -154,7 +154,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         return sendError(reply, ERROR_CODES.USER_NOT_FOUND)
       }
 
-      return toSuccessResponse(user.value)
+      // 从响应中排除敏感字段
+      const { password, ...safeUserData } = user.value
+      return toSuccessResponse({
+        username: safeUserData.username,
+        email: safeUserData.email
+      })
     }
   )
 }

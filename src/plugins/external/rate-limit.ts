@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify'
+import fp from 'fastify-plugin'
 import fastifyRateLimit from '@fastify/rate-limit'
 
 export const autoConfig = (fastify: FastifyInstance) => {
@@ -13,4 +14,7 @@ export const autoConfig = (fastify: FastifyInstance) => {
  *
  * @see {@link https://github.com/fastify/fastify-rate-limit}
  */
-export default fastifyRateLimit
+export default fp(fastifyRateLimit, {
+  name: 'rate-limit',
+  dependencies: ['@fastify/env']
+})

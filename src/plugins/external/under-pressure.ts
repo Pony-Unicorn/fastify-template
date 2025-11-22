@@ -2,6 +2,8 @@ import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 import fastifyUnderPressure from '@fastify/under-pressure'
 
+import { sql } from 'drizzle-orm'
+
 export const autoConfig = (fastify: FastifyInstance) => {
   return {
     maxEventLoopDelay: 1000,
@@ -12,7 +14,7 @@ export const autoConfig = (fastify: FastifyInstance) => {
     retryAfter: 50,
     healthCheck: async () => {
       try {
-        await fastify.db.$client.query('SELECT 1')
+        await fastify.db.execute(sql`SELECT 1`)
         return true
         /* c8 ignore start */
       } catch (err) {

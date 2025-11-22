@@ -1,5 +1,8 @@
-import { Connection, createConnection } from 'mysql2/promise'
+import { sql } from 'drizzle-orm'
+import { drizzle, type MySql2Database } from 'drizzle-orm/mysql2'
+import mysql, { type Pool } from 'mysql2/promise'
 
+import { usersTable } from '../src/models/schema.js'
 import { scryptHash } from '../src/plugins/app/password-manager.js'
 
 if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
@@ -9,20 +12,26 @@ if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
 }
 
 async function seed() {
-  const connection: Connection = await createConnection({
+  const pool = mysql.createPool({
     uri: process.env.DATABASE_URL!
   })
 
+  const db = drizzle({
+    client: pool
+  })
+
   try {
-    await seedUsers(connection)
+    await seedUsers(db)
   } catch (error) {
     console.error('Error seeding database:', error)
   } finally {
-    await connection.end()
+    await pool.end()
   }
 }
 
-async function seedUsers(connection: Connection) {
+async function seedUsers(
+  db: MySql2Database<Record<string, never>> & { $client: Pool }
+) {
   const users = [
     { username: 'basic', email: 'basic@example.com' },
     { username: 'moderator', email: 'moderator@example.com' },
@@ -31,15 +40,16 @@ async function seedUsers(connection: Connection) {
   const hash = await scryptHash('Password123$')
 
   for (const user of users) {
-    const [userResult] = await connection.execute(
-      `
-      INSERT INTO users (username, email, password, created_at, updated_at)
-      VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
-    `,
-      [user.username, user.email, hash]
-    )
+    const result = await db.insert(usersTable).values({
+      username: user.username,
+      email: user.email,
+      password: hash,
+      createdAt: sql`UNIX_TIMESTAMP()`,
+      updatedAt: sql`UNIX_TIMESTAMP()`
+    })
 
-    const userId = (userResult as { insertId: number }).insertId
+    // MySQL2 返回的 insertId 在 result 对象中
+    const userId = (result as unknown as [{ insertId: number }])[0].insertId
 
     console.log(`User ${userId} has been seeded successfully.`)
   }

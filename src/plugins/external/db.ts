@@ -10,7 +10,12 @@ declare module 'fastify' {
   }
 }
 
-export const autoConfig = (fastify: FastifyInstance) => {
+interface DbPluginOptions {
+  uri: string
+  connectionLimit: number
+}
+
+export const autoConfig = (fastify: FastifyInstance): DbPluginOptions => {
   return {
     uri: fastify.config.DATABASE_URL,
     connectionLimit: 20
@@ -18,18 +23,26 @@ export const autoConfig = (fastify: FastifyInstance) => {
 }
 
 export default fp(
-  async (fastify: FastifyInstance, opts) => {
-    const poolConnection = mysql.createPool(opts)
+  async (fastify: FastifyInstance, opts: DbPluginOptions) => {
+    if (!fastify.hasDecorator('db')) {
+      const { uri, connectionLimit } = opts
 
-    const drizzleClient = drizzle({
-      client: poolConnection
-    })
+      const poolConnection = mysql.createPool({ uri, connectionLimit })
 
-    fastify.decorate('db', drizzleClient)
+      const drizzleClient = drizzle({
+        client: poolConnection
+      })
 
-    fastify.addHook('onClose', async (instance) => {
-      await instance.db.$client.end()
-    })
+      fastify.decorate('db', drizzleClient)
+
+      fastify.addHook('onClose', async (instance) => {
+        await instance.db.$client.end()
+      })
+    } else {
+      throw new Error(
+        'A `db` decorator has already been registered, please ensure you are not registering multiple instances of this plugin'
+      )
+    }
   },
   {
     name: 'db',
