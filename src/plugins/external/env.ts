@@ -6,7 +6,8 @@ declare module 'fastify' {
       NODE_ENV: string
       PORT: number
       DATABASE_URL: string
-      LOG_LEVEL: string
+      FASTIFY_LOG_LEVEL: string
+      FASTIFY_TRUST_PROXY_ENABLED: boolean
       RATE_LIMIT_MAX: number
       FASTIFY_CLOSE_GRACE_DELAY: number
       CAN_CREATE_DATABASE: boolean
@@ -43,14 +44,18 @@ const schema = {
       default: false
     },
 
-    // Server
+    // fastify cli
     FASTIFY_CLOSE_GRACE_DELAY: {
       type: 'number',
       default: 1000
     },
-    LOG_LEVEL: {
+    FASTIFY_LOG_LEVEL: {
       type: 'string',
       default: 'info'
+    },
+    FASTIFY_TRUST_PROXY_ENABLED: {
+      type: 'boolean',
+      default: false
     },
 
     // Security

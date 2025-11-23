@@ -9,6 +9,20 @@ const PasswordSchema = Type.String({
   minLength: 8
 })
 
+// User info response (reusable)
+export const UserInfoSchema = Type.Object({
+  username: Type.String(),
+  email: Type.String()
+})
+
+// Users list response with pagination
+export const UsersListResponseSchema = Type.Object({
+  items: Type.Array(UserInfoSchema),
+  page: Type.Integer({ minimum: 1 }),
+  pageSize: Type.Integer({ minimum: 1 }),
+  total: Type.Integer({ minimum: 0 })
+})
+
 export const UpdateCredentialsSchema = Type.Object({
   email: EmailSchema,
   currentPassword: PasswordSchema,

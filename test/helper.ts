@@ -1,11 +1,8 @@
 import assert from 'node:assert'
-import path from 'node:path'
 import { TestContext } from 'node:test'
-import { FastifyInstance, LightMyRequestResponse } from 'fastify'
+import Fastify, { FastifyInstance, LightMyRequestResponse } from 'fastify'
 
-import { build as buildApplication } from 'fastify-cli/helper.js'
-
-import { options as serverOptions } from '../dist/src/app.js'
+import serviceApp from '../dist/app.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -13,8 +10,6 @@ declare module 'fastify' {
     // injectWithLogin: typeof injectWithLogin
   }
 }
-
-const AppPath = path.join(import.meta.dirname, '../dist/src/app.js')
 
 // Fill in this config with all the configurations
 // needed for testing the application
@@ -72,21 +67,18 @@ export function expectValidationError(
 
 // automatically build and tear down our instance
 export async function build(t?: TestContext) {
-  // you can set all the options supported by the fastify CLI command
-  const argv = [AppPath]
+  const app = Fastify({
+    logger: false
+  })
 
-  // fastify-plugin ensures that all decorators
-  // are exposed for testing purposes, this is
-  // different from the production setup
-  const app = (await buildApplication(
-    argv,
-    config(),
-    serverOptions
-  )) as FastifyInstance
+  // Register the application
+  await app.register(serviceApp)
 
   // This is after start, so we can't decorate the instance using `.decorate`
   // app.login = login
   // app.injectWithLogin = injectWithLogin
+
+  await app.ready()
 
   // If we pass the test contest, it will close the app after we are done
   if (t) {

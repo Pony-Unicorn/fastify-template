@@ -31,41 +31,152 @@ pnpm dev
 - 提交前执行 lint 或 format 进行代码格式化
 - 使用 TypeBox + @fastify/type-provider-typebox 来统一类型和验证。
 - SQL 构建器使用 drizzle-orm 框架，避免手写 SQL 语句。
-- API 接口设计遵循 RESTful API 标准
-  - 参考[RESTful API 设计参考文献列表](https://github.com/aisuhua/restful-api-design-references)
-  - 参考[good API design](https://www.seangoedecke.com/good-api-design/)
+- API 接口设计采用 **RESTful 风格**（资源导向 + HTTP 语义）
+  - 参考主流实践：[GitHub API](https://docs.github.com/en/rest)、[Stripe API](https://stripe.com/docs/api)
+  - 参考 [RESTful API 设计参考文献列表](https://github.com/aisuhua/restful-api-design-references)
+  - 参考 [good API design](https://www.seangoedecke.com/good-api-design/)
+  - 注：采用实用主义 REST，不强制要求 HATEOAS
 - 认证采用 `Authorization: <type> <credentials>` 方式
   - Bearer、tma、personal_sign
-- reply(响应):
-  - 尽量使用 async/await 形式
-  - 返回响应
-    - 常规接口直接用 return { statusCode: 200, message: 'OK', result: data } 这种纯对象返回
-    - 特殊需求（比如非200/201状态码或特殊 header）时，使用 reply.status(code).send() 手动控制响应
-- 状态码
-  - 参考 https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Status
-  - 常见的 HTTP 状态码, 使用 https://github.com/prettymuchbryce/http-status-codes
 
-    > 只有来自客户端的请求被正确的处理后才能返回 2xx 的响应，所以当 API 返回 2xx 类型的状态码时，前端必须认定该请求已处理成功。
+### API 响应设计（GitHub API 风格）
 
-  - 必须强调的是，所有 API 一定不可返回 1xx 类型的状态码。当 API 发生错误时，必须返回错误的详细信息。
-  - 状态码规则
-    - 使用 HTTP 状态码 + 三位业务码 格式，如 403002 代表用户已禁用, 也可简化处理不加业务码
-    - 200 最常见的状态码，在所有成功的 GET 请求中，必须返回此状态码
-    - 201 当服务器创建数据成功时，返回此状态码。常见的场景是使用 POST 提交用户信息，如：添加了新用户、上传了图片、创建了新活动等，也可以选择在用户创建成功后返回新用户的数据
-  - 判断标准：看你的controller方法能不能正常执行完
-    - ✅ 200的情况：
-      - 查到用户了 → return user
-      - 没查到用户 → return null 或 { users: [] }
-      - 转账余额不足 → return { success: false, msg: '余额不足' }
-    - ❌ 4xx/5xx的情况：
-      - 参数格式错误 → 还没开始查就发现问题 → 400
-      - 没登录 → 压根不让你查 → 401
-      - 数据库连不上 → 查询执行失败 → 500
-  - 总结
-    - 参数格式错误 → HTTP 400 + 自定义错误码
-    - 认证失败 → HTTP 401 + 自定义错误码
-    - 资源不存在 → HTTP 404 + 自定义错误码
-    - 业务逻辑失败 → HTTP 200 + 自定义错误码
+本项目采用 **纯 HTTP 语义** 的 API 设计风格，参考 GitHub、Stripe 等主流 API 设计：
+
+#### 响应格式规范
+
+**成功响应**：直接返回数据，不使用包装对象
+
+```typescript
+// ✅ 单个资源
+GET /api/users/info?email=user@example.com
+→ HTTP 200
+→ { "username": "john", "email": "user@example.com" }
+
+// ✅ 集合资源（列表）
+GET /api/users/123/posts
+→ HTTP 200
+→ { "items": [...], "total": 10, "page": 1, "pageSize": 20 }
+
+// ✅ 空集合（用户存在但没有 posts）
+GET /api/users/123/posts
+→ HTTP 200
+→ { "items": [], "total": 0, "page": 1, "pageSize": 20 }
+
+// ✅ 创建成功
+POST /api/users/register
+→ HTTP 201
+→ { "message": "User registered successfully" }
+```
+
+**错误响应**：使用 `@fastify/sensible` 抛出标准 HTTP 错误
+
+```typescript
+// ❌ 资源不存在
+GET /api/users/info?email=notfound@example.com
+→ HTTP 404
+→ { "message": "User not found" }
+
+// ❌ 参数验证失败
+POST /api/users/register (invalid email)
+→ HTTP 400
+→ { "message": "body/email must match format \"email\"" }
+
+// ❌ 认证失败
+PUT /api/users/update-password (wrong password)
+→ HTTP 401
+→ { "message": "Invalid current password" }
+
+// ❌ 资源冲突
+POST /api/users/register (email already exists)
+→ HTTP 409
+→ { "message": "User already exists" }
+
+// ❌ 服务器错误
+GET /api/users/info (database error)
+→ HTTP 500
+→ { "message": "Internal Server Error" }
+```
+
+#### HTTP 状态码使用规范
+
+参考：[MDN HTTP Status](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status)
+
+**2xx 成功**
+
+- `200 OK` - GET 请求成功，或 PUT/DELETE 操作完成（**推荐优先使用**）
+- `201 Created` - POST 创建资源成功
+- `202 Accepted` - 请求已接受，但处理尚未完成（异步任务场景）
+- `204 No Content` - 操作成功但无需返回数据（如 DELETE）
+
+> 💡 **最佳实践**：大部分场景使用 `200 OK` 即可，只有在明确需要区分资源创建（201）或异步处理（202）时才使用特定状态码。
+
+**4xx 客户端错误**
+
+- `400 Bad Request` - 请求参数格式错误、验证失败
+- `401 Unauthorized` - 未认证或认证失败
+- `403 Forbidden` - 已认证但无权限访问
+- `404 Not Found` - 资源不存在
+- `409 Conflict` - 资源冲突（如重复创建）
+- `422 Unprocessable Entity` - 业务逻辑错误（如余额不足）
+
+**5xx 服务器错误**
+
+- `500 Internal Server Error` - 服务器内部错误（如数据库连接失败）
+- `503 Service Unavailable` - 服务暂时不可用
+
+#### 错误处理实现
+
+使用 `@fastify/sensible` 提供的 `reply` 错误方法：
+
+```typescript
+// 统一使用 reply 方法返回错误
+return reply.notFound('User not found')
+return reply.badRequest('Invalid email format')
+return reply.unauthorized('Invalid credentials')
+return reply.conflict('User already exists')
+return reply.internalServerError('Database error')
+return reply.unprocessableEntity('Insufficient balance')
+
+// 不带消息（使用默认消息）
+return reply.notFound()
+```
+
+> ⚠️ **注意**：统一使用 `return reply.xxx()` 形式，不使用 `throw fastify.httpErrors.xxx()`，保持代码风格一致。
+
+#### 集合 vs 单个资源的 404 规则
+
+**关键原则**：
+
+- **集合查询**（列表）→ 空结果返回 `200 + []`
+- **单个资源**（详情）→ 不存在返回 `404`
+
+```typescript
+// ✅ 集合为空 → 200
+GET /api/users/123/posts  // 用户存在，但没有发表任何 post
+→ HTTP 200
+→ { "items": [], "total": 0 }
+
+// ❌ 父资源不存在 → 404
+GET /api/users/999/posts  // 用户本身不存在
+→ HTTP 404
+→ { "message": "User not found" }
+
+// ❌ 单个资源不存在 → 404
+GET /api/posts/123  // 特定的 post 不存在
+→ HTTP 404
+→ { "message": "Post not found" }
+```
+
+#### 开发规范
+
+- ✅ 无特殊情况必须使用 `async/await` 形式
+- ✅ 成功响应直接 `return` 数据对象，无需包装
+- ✅ 错误使用 `return reply.xxx()` 返回（统一风格）
+- ✅ 充分利用 TypeBox schema 进行参数验证
+- ✅ 优先使用 `200 OK`，特殊场景才用 `201`/`202`/`204`
+- ❌ 不使用 1xx 状态码
+- ❌ 不使用业务状态码（如 40401、50001），完全依赖 HTTP 状态码
 
 - schema: 尽量写好 schema, 使用 @sinclair/typebox 库
 - routes:
@@ -191,9 +302,6 @@ sql/
 ## ✅ Todo List
 
 - [ ] husky
-- [ ] fastily 框架错误统一输出
-- [ ] 实现分页功能
-
 - [ ] 认证系统
 - [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen

@@ -1,7 +1,7 @@
 {
   "name": "fastify-template",
-  "version": "0.0.1",
-  "description": "This project was bootstrapped with Fastify-CLI.",
+  "version": "0.1.0",
+  "description": "A modern Fastify TypeScript backend template with TypeBox validation, Drizzle ORM, built-in security plugins, and RESTful API design following GitHub API conventions.",
   "main": "app.ts",
   "type": "module",
   "directories": {
@@ -42,7 +42,6 @@
     "fastify": "^5.6.2",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.1.0",
-    "http-status-codes": "^2.3.0",
     "mysql2": "^3.15.3",
     "neverthrow": "^8.2.0"
   },

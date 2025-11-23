@@ -7,9 +7,7 @@ export interface AppOptions
     Partial<AutoloadPluginOptions> {}
 // Pass --options via CLI arguments in command to enable these options.
 export const options: AppOptions = {
-  trustProxy: true, // Cloudflare/nginx proxy must be enabled. If not, it must be disabled.
   logger: {
-    level: process.env.LOG_LEVEL || 'info',
     transport: {
       targets: [
         {
@@ -69,11 +67,10 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
     options: { ...opts }
   })
 
-  fastify.setErrorHandler((err, request, reply) => {
-    const error = err as FastifyError
+  fastify.setErrorHandler((err: FastifyError, request, reply) => {
     fastify.log.error(
       {
-        err: error,
+        error: err,
         request: {
           method: request.method,
           url: request.url,
@@ -84,14 +81,14 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
       'Unhandled error occurred'
     )
 
-    reply.code(error.statusCode ?? 500)
+    reply.code(err.statusCode ?? 500)
 
-    let message = 'Internal Server Error'
-    if (error.statusCode && error.statusCode < 500) {
-      message = error.message
+    return {
+      message:
+        err.statusCode && err.statusCode < 500
+          ? err.message
+          : 'Internal Server Error'
     }
-
-    return { message }
   })
 
   // An attacker could search for valid URLs if your 404 error handling is not rate limited.

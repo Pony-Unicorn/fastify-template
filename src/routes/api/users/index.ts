@@ -1,19 +1,51 @@
 import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
 
-import ERROR_CODES from '../../../config/error-codes.js'
 import {
-  DefaultResponseJsonSchema,
   EmailSchema,
-  ResponseJsonSchema
+  MessageResponseSchema,
+  PagingQueryStringSchema
 } from '../../../schemas/common.js'
 import {
   RegisterSchema,
-  UpdateCredentialsSchema
+  UpdateCredentialsSchema,
+  UserInfoSchema,
+  UsersListResponseSchema
 } from '../../../schemas/users.js'
-import { sendError, toSuccessResponse } from '../../../utils/response.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { usersRepository, passwordManager, log } = fastify
+
+  fastify.get(
+    '/',
+    {
+      schema: {
+        querystring: PagingQueryStringSchema,
+        response: {
+          200: UsersListResponseSchema
+        }
+      }
+    },
+    async function (request, reply) {
+      const { page = 1, page_size = 20 } = request.query
+
+      const result = await usersRepository.findAllUsers({
+        page,
+        pageSize: page_size
+      })
+
+      if (result.isErr()) {
+        log.error(`Failed to fetch users: ${result.error.message}`)
+        return reply.internalServerError('Database error')
+      }
+
+      return {
+        items: result.value.items,
+        page,
+        pageSize: page_size,
+        total: result.value.total
+      }
+    }
+  )
 
   fastify.post(
     '/register',
@@ -27,8 +59,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       schema: {
         body: RegisterSchema,
         response: {
-          201: ResponseJsonSchema,
-          default: DefaultResponseJsonSchema
+          201: MessageResponseSchema
         }
       }
     },
@@ -38,11 +69,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       // 检查用户是否已存在
       const existingUser = await usersRepository.findByEmail(email!)
       if (existingUser.isErr()) {
-        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
+        return reply.internalServerError('Database error')
       }
 
       if (existingUser.value) {
-        return sendError(reply, ERROR_CODES.USER_ALREADY_EXISTS)
+        return reply.conflict('User already exists')
       }
 
       // 加密密码
@@ -58,13 +89,14 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
       if (createResult.isErr()) {
         log.error(`Failed to create user: ${createResult.error.message}`)
-        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
+        return reply.internalServerError('Database error')
       }
 
       reply.code(201)
-      return toSuccessResponse(null)
+      return { message: 'successfully' }
     }
   )
+
   fastify.put(
     '/update-password',
     {
@@ -77,13 +109,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       schema: {
         body: UpdateCredentialsSchema,
         response: {
-          200: ResponseJsonSchema,
-          400: Type.Object({
-            message: Type.String()
-          }),
-          401: Type.Object({
-            message: Type.String()
-          })
+          200: MessageResponseSchema
         }
       }
     },
@@ -92,8 +118,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
       const user = await usersRepository.findByEmail(email!)
 
-      if (user.isErr() || !user.value) {
-        return reply.code(401).send({ message: 'User does not exist.' })
+      if (user.isErr()) {
+        return reply.internalServerError('Database error')
+      }
+
+      if (!user.value) {
+        return reply.unauthorized('User does not exist')
       }
 
       const isPasswordValid = await passwordManager.compare(
@@ -102,19 +132,19 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       )
 
       if (!isPasswordValid) {
-        return reply.code(401).send({ message: 'Invalid current password.' })
+        return reply.unauthorized('Invalid current password')
       }
 
       if (newPassword === currentPassword) {
-        return reply.code(400).send({
-          message: 'New password cannot be the same as the current password.'
-        })
+        return reply.badRequest(
+          'New password cannot be the same as the current password'
+        )
       }
 
       const hashedPassword = await passwordManager.hash(newPassword!)
       await usersRepository.updatePassword(email!, hashedPassword)
 
-      return toSuccessResponse(null)
+      return { message: 'successfully' }
     }
   )
 
@@ -126,16 +156,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           email: EmailSchema
         }),
         response: {
-          200: Type.Intersect([
-            ResponseJsonSchema,
-            Type.Object({
-              result: Type.Object({
-                username: Type.String(),
-                email: Type.String()
-              })
-            })
-          ]),
-          default: DefaultResponseJsonSchema
+          200: UserInfoSchema
         }
       }
     },
@@ -146,20 +167,17 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
       if (user.isErr()) {
         log.error(`Email ${request.query.email}, Error ${user.error.message}`)
-
-        return sendError(reply, ERROR_CODES.DATABASE_ERROR)
+        return reply.internalServerError('Database error')
       }
 
       if (!user.value) {
-        return sendError(reply, ERROR_CODES.USER_NOT_FOUND)
+        return reply.notFound()
       }
 
-      // 从响应中排除敏感字段
-      const { password, ...safeUserData } = user.value
-      return toSuccessResponse({
-        username: safeUserData.username,
-        email: safeUserData.email
-      })
+      return {
+        username: user.value.username,
+        email: user.value.email
+      }
     }
   )
 }

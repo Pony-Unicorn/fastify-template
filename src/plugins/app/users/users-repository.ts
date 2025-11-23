@@ -33,6 +33,40 @@ export function createUsersRepository(fastify: FastifyInstance) {
       )
     },
 
+    async findAllUsers(options: { page: number; pageSize: number }) {
+      const { page, pageSize } = options
+      const offset = (page - 1) * pageSize
+
+      const [users, countResult] = await Promise.all([
+        toResult(
+          db
+            .select({
+              username: usersTable.username,
+              email: usersTable.email
+            })
+            .from(usersTable)
+            .limit(pageSize)
+            .offset(offset)
+        ),
+        toResult(
+          db
+            .select({ count: sql<number>`count(*)` })
+            .from(usersTable)
+            .then((result) => result[0].count)
+        )
+      ])
+
+      if (users.isErr()) return users
+      if (countResult.isErr()) return countResult
+
+      return toResult(
+        Promise.resolve({
+          items: users.value,
+          total: countResult.value
+        })
+      )
+    },
+
     async updatePassword(email: string, hashedPassword: string) {
       return toResult(
         db

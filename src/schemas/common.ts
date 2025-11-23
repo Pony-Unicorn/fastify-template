@@ -1,4 +1,4 @@
-import { Static, Type } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 export const StringSchema = Type.String({
   minLength: 1,
@@ -15,37 +15,33 @@ export const DateTimeSchema = Type.String({ format: 'date-time' })
 
 export const IdSchema = Type.Integer({ minimum: 1 })
 
-export const DefaultResponseJsonSchema = Type.Object({
-  statusCode: Type.Number(),
+// Common message response
+export const MessageResponseSchema = Type.Object({
   message: Type.String()
 })
 
-// 响应体
-export const ResponseJsonSchema = Type.Object({
-  statusCode: Type.Number({
-    default: 200,
-    description: '状态码, 正常为 200 和 http 状态码统一'
-  }),
-  message: Type.String({ default: 'OK', description: '消息' }),
-  result: Type.Unknown()
-})
-
-export type ResponseJson = Static<typeof ResponseJsonSchema>
-
-// 响应分页信息
+// Pagination info (JSON response uses camelCase)
 export const PagingInfoSchema = Type.Object({
-  page: Type.Integer({ minimum: 1, description: '当前页码' }),
-  pageSize: Type.Integer({ minimum: 1, description: '每页数量' }),
-  total: Type.Integer({ minimum: 0, description: '总数量' })
+  page: Type.Integer({ minimum: 1, description: 'Current page number' }),
+  pageSize: Type.Integer({ minimum: 1, description: 'Items per page' }),
+  total: Type.Integer({ minimum: 0, description: 'Total count' })
 })
 
-// 分页查询
+// Pagination query (URL parameters use snake_case per RESTful conventions)
 export const PagingQueryStringSchema = Type.Object({
-  page: Type.Integer({ minimum: 1, default: 1, description: '当前页码' }),
-  pageSize: Type.Integer({ minimum: 1, default: 20, description: '每页数量' })
+  page: Type.Integer({
+    minimum: 1,
+    default: 1,
+    description: 'Current page number'
+  }),
+  page_size: Type.Integer({
+    minimum: 1,
+    default: 20,
+    description: 'Items per page'
+  })
 })
 
-// 请求头
+// Authorization header
 export const HeaderAuthSchema = Type.Object({
   Authorization: Type.String()
 })

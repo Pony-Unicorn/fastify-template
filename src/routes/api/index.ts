@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify'
-import { Type } from '@fastify/type-provider-typebox'
+
+import { MessageResponseSchema } from '../../schemas/common.js'
 
 export default async function (fastify: FastifyInstance) {
   fastify.get(
@@ -7,14 +8,10 @@ export default async function (fastify: FastifyInstance) {
     {
       schema: {
         response: {
-          200: Type.Object({
-            message: Type.String()
-          })
+          200: MessageResponseSchema
         }
       }
     },
-    async function () {
-      return { message: 'Welcome to the official fastify template!' }
-    }
+    () => ({ message: 'Welcome to the official fastify template!!!' })
   )
 }

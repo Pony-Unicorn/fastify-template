@@ -58,17 +58,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 1. **类型和验证**: 使用 TypeBox + @fastify/type-provider-typebox 统一类型推导和验证
 2. **数据库**: 使用 Drizzle ORM，避免手写 SQL
-3. **响应格式**: 返回 `{ statusCode, message, result }` 格式
-4. **错误处理**: 全局错误处理器和 404 处理器（带速率限制）
-5. **日志系统**: 多目标日志记录（控制台 + 文件）
+3. **API 设计**: 采用 RESTful 风格（资源导向 + HTTP 语义），参考 GitHub API、Stripe API
+4. **响应格式**:
+   - 成功响应：直接返回数据，不使用包装对象（如 `{ statusCode, message, result }`）
+   - 单个资源：`{ "username": "john", "email": "..." }`
+   - 集合资源：`{ "items": [...], "total": 10, "page": 1, "pageSize": 20 }`
+   - 错误响应：使用 `@fastify/sensible` 返回标准格式 `{ "message": "..." }`
+5. **错误处理**:
+   - 统一使用 `return reply.xxx()` 形式（如 `reply.notFound()`, `reply.badRequest()`）
+   - 不使用 `throw fastify.httpErrors.xxx()` 形式
+   - 全局错误处理器和 404 处理器（带速率限制）
+6. **日志系统**: 多目标日志记录（控制台 + 文件）
 
-### 状态码规范
+### HTTP 状态码使用规范
 
-- 使用标准 HTTP 状态码
-- 可选业务码：HTTP状态码 + 三位业务码（如 403002）
-- 200: 成功的 GET 请求
-- 201: 创建成功（POST）
-- 4xx/5xx: 错误响应必须包含详细错误信息
+**2xx 成功**
+- `200 OK` - GET 请求成功，或 PUT/DELETE 操作完成（**推荐优先使用**）
+- `201 Created` - POST 创建资源成功
+- `202 Accepted` - 请求已接受，但处理尚未完成（异步任务场景）
+- `204 No Content` - 操作成功但无需返回数据（如 DELETE）
+
+**4xx 客户端错误**
+- `400 Bad Request` - 请求参数格式错误、验证失败
+- `401 Unauthorized` - 未认证或认证失败
+- `403 Forbidden` - 已认证但无权限访问
+- `404 Not Found` - 资源不存在
+- `409 Conflict` - 资源冲突（如重复创建）
+- `422 Unprocessable Entity` - 业务逻辑错误（如余额不足）
+
+**5xx 服务器错误**
+- `500 Internal Server Error` - 服务器内部错误（如数据库连接失败）
+- `503 Service Unavailable` - 服务暂时不可用
+
+**重要原则**
+- ❌ 不使用业务状态码（如 40401、50001），完全依赖 HTTP 状态码
+- ❌ 不使用 1xx 状态码
+- ✅ 集合查询（列表）→ 空结果返回 `200 + []`
+- ✅ 单个资源（详情）→ 不存在返回 `404`
+- ✅ 大部分场景使用 `200 OK` 即可，只有在明确需要区分时才使用特定状态码
 
 ### 安全特性
 
