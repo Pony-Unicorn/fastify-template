@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import { usersTable } from '../../../models/schema.js'
 import { type MySqlDBTransaction } from '../../../models/types.js'
@@ -27,7 +27,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
             email: usersTable.email
           })
           .from(usersTable)
-          .where(eq(usersTable.email, email))
+          .where(and(eq(usersTable.email, email), eq(usersTable.isDeleted, 0)))
           .limit(1)
           .then((users) => users[0] ?? null)
       )
@@ -45,6 +45,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
               email: usersTable.email
             })
             .from(usersTable)
+            .where(eq(usersTable.isDeleted, 0))
             .limit(pageSize)
             .offset(offset)
         ),
@@ -52,6 +53,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
           db
             .select({ count: sql<number>`count(*)` })
             .from(usersTable)
+            .where(eq(usersTable.isDeleted, 0))
             .then((result) => result[0].count)
         )
       ])

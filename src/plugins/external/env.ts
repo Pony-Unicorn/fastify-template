@@ -11,6 +11,7 @@ declare module 'fastify' {
       RATE_LIMIT_MAX: number
       FASTIFY_CLOSE_GRACE_DELAY: number
       CAN_CREATE_DATABASE: boolean
+      CAN_MIGRATE_DATABASE: boolean
       CAN_SEED_DATABASE: boolean
       CORS_ORIGINS: string
     }
@@ -36,6 +37,10 @@ const schema = {
       type: 'string'
     },
     CAN_CREATE_DATABASE: {
+      type: 'boolean',
+      default: false
+    },
+    CAN_MIGRATE_DATABASE: {
       type: 'boolean',
       default: false
     },

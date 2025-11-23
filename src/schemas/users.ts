@@ -2,11 +2,14 @@ import { Type } from '@sinclair/typebox'
 
 import { EmailSchema } from './common.js'
 
-const passwordPattern = '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,32}$'
+// Password must contain at least: 1 uppercase, 1 lowercase, 1 digit, 1 special character
+const passwordPattern =
+  '^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$%^&*()_+\\-=\\[\\]{}|;:,.<>?]).{8,32}$'
 
 const PasswordSchema = Type.String({
   pattern: passwordPattern,
-  minLength: 8
+  minLength: 8,
+  maxLength: 32
 })
 
 // User info response (reusable)

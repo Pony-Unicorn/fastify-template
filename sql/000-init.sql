@@ -12,10 +12,11 @@ CREATE TABLE
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     inviter_code INT UNSIGNED DEFAULT NULL COMMENT '邀请人的邀请码，直接使用 id，外部使用 sqids库 转码',
-    created_at INT UNSIGNED NOT NULL COMMENT '创建时间, UNIX 秒 类型或BIGINT',
-    updated_at INT UNSIGNED NOT NULL COMMENT '更新时间, UNIX 秒 类型或BIGINT',
-    deleted_at INT UNSIGNED DEFAULT 0 COMMENT '删除时间',
+    created_at BIGINT UNSIGNED NOT NULL COMMENT '创建时间, UNIX 秒时间戳',
+    updated_at BIGINT UNSIGNED NOT NULL COMMENT '更新时间, UNIX 秒时间戳',
+    deleted_at BIGINT UNSIGNED DEFAULT 0 COMMENT '删除时间, UNIX 秒时间戳',
     is_deleted TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '是否删除',
     version INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '用于并发控制，乐观锁',
-    KEY idx_inviter_code (inviter_code)
+    KEY idx_inviter_code (inviter_code),
+    KEY idx_is_deleted (is_deleted)
   ) ENGINE = InnoDB;

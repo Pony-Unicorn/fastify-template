@@ -14,7 +14,10 @@ const plugin: FastifyPluginAsync = async (fastify) => {
   const CORS_ALLOW_LIST = new Set(corsOrigins)
 
   await fastify.register(cors, {
-    origin: (origin, cb) => cb(null, !origin || CORS_ALLOW_LIST.has(origin)),
+    origin: (origin, cb) => {
+      // Only allow origins in the allowlist
+      cb(null, !!origin && CORS_ALLOW_LIST.has(origin))
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   })

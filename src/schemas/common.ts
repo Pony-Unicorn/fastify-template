@@ -36,6 +36,7 @@ export const PagingQueryStringSchema = Type.Object({
   }),
   page_size: Type.Integer({
     minimum: 1,
+    maximum: 100,
     default: 20,
     description: 'Items per page'
   })
