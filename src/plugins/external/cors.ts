@@ -1,6 +1,6 @@
+import cors from '@fastify/cors'
 import { FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
-import cors from '@fastify/cors'
 
 /**
  * This plugin enables the use of CORS with origins from environment variables.
