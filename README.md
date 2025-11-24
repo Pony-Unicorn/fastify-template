@@ -302,6 +302,7 @@ sql/
 ## ✅ Todo List
 
 - [ ] husky
+- [ ] 常用的验证方式，比如邮箱等
 - [ ] 认证系统，验证登陆状态
 - [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen

@@ -4,16 +4,8 @@ declare module 'fastify' {
   export interface FastifyInstance {
     config: {
       NODE_ENV: string
-      PORT: number
       DATABASE_URL: string
-      FASTIFY_LOG_LEVEL: string
-      FASTIFY_TRUST_PROXY_ENABLED: boolean
       RATE_LIMIT_MAX: number
-      FASTIFY_CLOSE_GRACE_DELAY: number
-      CAN_CREATE_DATABASE: boolean
-      CAN_INIT_TABLES: boolean
-      CAN_MIGRATE_DATABASE: boolean
-      CAN_SEED_DATABASE: boolean
       CORS_ORIGINS: string
     }
   }
@@ -23,55 +15,16 @@ const schema = {
   type: 'object',
   required: ['DATABASE_URL'],
   properties: {
-    // Environment
     NODE_ENV: {
       type: 'string',
       default: 'development'
     },
-
-    // Database
     DATABASE_URL: {
       type: 'string'
     },
-    CAN_CREATE_DATABASE: {
-      type: 'boolean',
-      default: false
-    },
-    CAN_INIT_TABLES: {
-      type: 'boolean',
-      default: false
-    },
-    CAN_MIGRATE_DATABASE: {
-      type: 'boolean',
-      default: false
-    },
-    CAN_SEED_DATABASE: {
-      type: 'boolean',
-      default: false
-    },
-
-    // fastify cli
-    PORT: {
-      type: 'number',
-      default: 3000
-    },
-    FASTIFY_CLOSE_GRACE_DELAY: {
-      type: 'number',
-      default: 1000
-    },
-    FASTIFY_LOG_LEVEL: {
-      type: 'string',
-      default: 'info'
-    },
-    FASTIFY_TRUST_PROXY_ENABLED: {
-      type: 'boolean',
-      default: false
-    },
-
-    // Security
     RATE_LIMIT_MAX: {
       type: 'number',
-      default: 100 // Put it to 4 in your .env file for tests
+      default: 100
     },
     CORS_ORIGINS: {
       type: 'string',
@@ -94,7 +47,11 @@ export const autoConfig = {
 }
 
 /**
- * This plugins helps to check environment variables.
+ * Environment variables plugin for application runtime configuration.
+ *
+ * Only includes variables used in the application code.
+ * Script-only variables (CAN_*) are accessed directly via process.env.
+ * Fastify CLI variables (PORT, LOG_LEVEL, etc.) are handled automatically.
  *
  * @see {@link https://github.com/fastify/fastify-env}
  */
