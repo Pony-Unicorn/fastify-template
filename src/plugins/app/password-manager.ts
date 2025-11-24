@@ -1,5 +1,5 @@
-import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 import fp from 'fastify-plugin'
+import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
 
 declare module 'fastify' {
   export interface FastifyInstance {

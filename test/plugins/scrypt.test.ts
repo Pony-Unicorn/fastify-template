@@ -1,6 +1,6 @@
+import Fastify from 'fastify'
 import assert from 'node:assert'
 import { test } from 'node:test'
-import Fastify from 'fastify'
 
 import scryptPlugin from '../../dist/plugins/app/password-manager.js'
 

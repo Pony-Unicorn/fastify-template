@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify'
 import { Type } from '@fastify/type-provider-typebox'
+import { FastifyInstance } from 'fastify'
 
 export default async function (fastify: FastifyInstance) {
   fastify.get(

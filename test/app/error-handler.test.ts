@@ -1,7 +1,7 @@
-import assert from 'node:assert'
-import { it } from 'node:test'
 import fastify from 'fastify'
 import fp from 'fastify-plugin'
+import assert from 'node:assert'
+import { it } from 'node:test'
 
 import serviceApp from '../../dist/src/app.js'
 

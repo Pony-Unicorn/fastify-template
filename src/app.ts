@@ -1,6 +1,6 @@
-import { join } from 'node:path'
-import { FastifyError, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
+import { FastifyError, FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { join } from 'node:path'
 
 export interface AppOptions
   extends FastifyServerOptions,
@@ -53,14 +53,14 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
   // This loads all your application plugins defined in plugins/app
   // those should be support plugins that are reused
   // through your application
-  void fastify.register(AutoLoad, {
+  fastify.register(AutoLoad, {
     dir: join(import.meta.dirname, 'plugins/app'),
     options: { ...opts }
   })
 
   // This loads all plugins defined in routes
   // define your routes in one of these
-  void fastify.register(AutoLoad, {
+  fastify.register(AutoLoad, {
     dir: join(import.meta.dirname, 'routes'),
     autoHooks: true,
     cascadeHooks: true,

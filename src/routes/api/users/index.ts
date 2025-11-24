@@ -1,13 +1,17 @@
-import { FastifyPluginAsyncTypebox, Type } from '@fastify/type-provider-typebox'
+import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
 import {
-  EmailSchema,
   MessageResponseSchema,
+  PagingQueryString,
   PagingQueryStringSchema
 } from '../../../schemas/common.js'
 import {
+  Register,
   RegisterSchema,
+  UpdateCredentials,
   UpdateCredentialsSchema,
+  UserInfoQuery,
+  UserInfoQuerySchema,
   UserInfoSchema,
   UsersListResponseSchema
 } from '../../../schemas/users.js'
@@ -15,7 +19,7 @@ import {
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { usersRepository, passwordManager, log } = fastify
 
-  fastify.get(
+  fastify.get<{ Querystring: PagingQueryString }>(
     '/',
     {
       schema: {
@@ -26,11 +30,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
     },
     async function (request, reply) {
-      const { page = 1, page_size = 20 } = request.query
+      const { page, page_size: pageSize } = request.query
 
       const result = await usersRepository.findAllUsers({
         page,
-        pageSize: page_size
+        pageSize
       })
 
       if (result.isErr()) {
@@ -41,13 +45,13 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       return {
         items: result.value.items,
         page,
-        pageSize: page_size,
+        pageSize,
         total: result.value.total
       }
     }
   )
 
-  fastify.post(
+  fastify.post<{ Body: Register }>(
     '/register',
     {
       config: {
@@ -67,7 +71,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       const { email, username, password, inviterCode } = request.body
 
       // 检查用户是否已存在
-      const existingUser = await usersRepository.findByEmail(email!)
+      const existingUser = await usersRepository.findByEmail(email)
       if (existingUser.isErr()) {
         return reply.internalServerError('Database error')
       }
@@ -77,12 +81,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       // 加密密码
-      const hashedPassword = await passwordManager.hash(password!)
+      const hashedPassword = await passwordManager.hash(password)
 
       // 创建用户
       const createResult = await usersRepository.createUser({
-        email: email!,
-        username: username!,
+        email,
+        username,
         password: hashedPassword,
         inviterCode
       })
@@ -97,7 +101,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     }
   )
 
-  fastify.put(
+  fastify.put<{ Body: UpdateCredentials }>(
     '/update-password',
     {
       config: {
@@ -116,7 +120,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async function (request, reply) {
       const { newPassword, currentPassword, email } = request.body
 
-      const user = await usersRepository.findByEmail(email!)
+      const user = await usersRepository.findByEmail(email)
 
       if (user.isErr()) {
         return reply.internalServerError('Database error')
@@ -127,7 +131,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       const isPasswordValid = await passwordManager.compare(
-        currentPassword!,
+        currentPassword,
         user.value.password
       )
 
@@ -141,20 +145,26 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         )
       }
 
-      const hashedPassword = await passwordManager.hash(newPassword!)
-      await usersRepository.updatePassword(email!, hashedPassword)
+      const hashedPassword = await passwordManager.hash(newPassword)
+      const updateResult = await usersRepository.updatePassword(
+        email,
+        hashedPassword
+      )
+
+      if (updateResult.isErr()) {
+        log.error(`Failed to update password: ${updateResult.error.message}`)
+        return reply.internalServerError('Database error')
+      }
 
       return { message: 'successfully' }
     }
   )
 
-  fastify.get(
+  fastify.get<{ Querystring: UserInfoQuery }>(
     '/info',
     {
       schema: {
-        querystring: Type.Object({
-          email: EmailSchema
-        }),
+        querystring: UserInfoQuerySchema,
         response: {
           200: UserInfoSchema
         }
@@ -179,6 +189,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         email: user.value.email
       }
     }
+
+    // 验证登陆状态
   )
 }
 

@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox'
+import { Static, Type } from '@sinclair/typebox'
 
 export const StringSchema = Type.String({
   minLength: 1,
@@ -41,6 +41,9 @@ export const PagingQueryStringSchema = Type.Object({
     description: 'Items per page'
   })
 })
+
+export interface PagingQueryString
+  extends Static<typeof PagingQueryStringSchema> {}
 
 // Authorization header
 export const HeaderAuthSchema = Type.Object({

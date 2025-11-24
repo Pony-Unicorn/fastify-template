@@ -11,6 +11,7 @@ declare module 'fastify' {
       RATE_LIMIT_MAX: number
       FASTIFY_CLOSE_GRACE_DELAY: number
       CAN_CREATE_DATABASE: boolean
+      CAN_INIT_TABLES: boolean
       CAN_MIGRATE_DATABASE: boolean
       CAN_SEED_DATABASE: boolean
       CORS_ORIGINS: string
@@ -27,16 +28,16 @@ const schema = {
       type: 'string',
       default: 'development'
     },
-    PORT: {
-      type: 'number',
-      default: 3000
-    },
 
     // Database
     DATABASE_URL: {
       type: 'string'
     },
     CAN_CREATE_DATABASE: {
+      type: 'boolean',
+      default: false
+    },
+    CAN_INIT_TABLES: {
       type: 'boolean',
       default: false
     },
@@ -50,6 +51,10 @@ const schema = {
     },
 
     // fastify cli
+    PORT: {
+      type: 'number',
+      default: 3000
+    },
     FASTIFY_CLOSE_GRACE_DELAY: {
       type: 'number',
       default: 1000

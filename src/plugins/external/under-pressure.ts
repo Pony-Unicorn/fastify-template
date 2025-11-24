@@ -1,6 +1,6 @@
+import fastifyUnderPressure from '@fastify/under-pressure'
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
-import fastifyUnderPressure from '@fastify/under-pressure'
 
 import { sql } from 'drizzle-orm'
 

@@ -1,13 +1,9 @@
-import stylistic from '@stylistic/eslint-plugin'
+import prettier from 'eslint-config-prettier'
 import neo from 'neostandard'
 
 export default [
   ...neo({
     ts: true
   }),
-  {
-    plugins: {
-      '@stylistic': stylistic
-    }
-  }
+  prettier
 ]

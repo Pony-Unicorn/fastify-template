@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox'
+import { Static, Type } from '@sinclair/typebox'
 
 import { EmailSchema } from './common.js'
 
@@ -32,6 +32,9 @@ export const UpdateCredentialsSchema = Type.Object({
   newPassword: PasswordSchema
 })
 
+export interface UpdateCredentials
+  extends Static<typeof UpdateCredentialsSchema> {}
+
 export const RegisterSchema = Type.Object({
   email: EmailSchema,
   username: Type.String({
@@ -41,3 +44,12 @@ export const RegisterSchema = Type.Object({
   password: PasswordSchema,
   inviterCode: Type.Optional(Type.Number({ minimum: 1 }))
 })
+
+export interface Register extends Static<typeof RegisterSchema> {}
+
+// User info querystring
+export const UserInfoQuerySchema = Type.Object({
+  email: EmailSchema
+})
+
+export interface UserInfoQuery extends Static<typeof UserInfoQuerySchema> {}

@@ -1,15 +1,15 @@
+import Fastify, { LightMyRequestResponse } from 'fastify'
 import assert from 'node:assert'
 import { TestContext } from 'node:test'
-import Fastify, { FastifyInstance, LightMyRequestResponse } from 'fastify'
 
 import serviceApp from '../dist/app.js'
 
-declare module 'fastify' {
-  interface FastifyInstance {
-    // login: typeof login
-    // injectWithLogin: typeof injectWithLogin
-  }
-}
+// declare module 'fastify' {
+//   interface FastifyInstance {
+//     login: typeof login
+//     injectWithLogin: typeof injectWithLogin
+//   }
+// }
 
 // Fill in this config with all the configurations
 // needed for testing the application

@@ -1,6 +1,6 @@
 {
   "name": "fastify-template",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A modern Fastify TypeScript backend template with TypeBox validation, Drizzle ORM, built-in security plugins, and RESTful API design following GitHub API conventions.",
   "main": "app.ts",
   "type": "module",
@@ -25,7 +25,25 @@
     "db:migrate": "tsx --env-file=.env ./scripts/migrate-database.ts",
     "db:seed": "tsx --env-file=.env ./scripts/seed-database.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "fastify",
+    "typescript",
+    "template",
+    "boilerplate",
+    "backend",
+    "api",
+    "rest",
+    "restful",
+    "typebox",
+    "drizzle",
+    "drizzle-orm",
+    "mysql",
+    "validation",
+    "security",
+    "cors",
+    "helmet",
+    "rate-limit"
+  ],
   "author": "Pony",
   "license": "MIT",
   "dependencies": {
@@ -46,15 +64,15 @@
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
-    "@stylistic/eslint-plugin": "^5.1.0",
-    "@types/node": "^22.1.0",
+    "@types/node": "^24.10.1",
     "c8": "^10.1.2",
     "concurrently": "^9.2.1",
-    "eslint": "^9.30.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
     "fastify-tsconfig": "^3.0.0",
     "neostandard": "^0.12.2",
     "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.3.0",
     "tsx": "^4.20.6",
     "typescript": "~5.9.3"
   }

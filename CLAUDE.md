@@ -73,12 +73,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### HTTP 状态码使用规范
 
 **2xx 成功**
+
 - `200 OK` - GET 请求成功，或 PUT/DELETE 操作完成（**推荐优先使用**）
 - `201 Created` - POST 创建资源成功
 - `202 Accepted` - 请求已接受，但处理尚未完成（异步任务场景）
 - `204 No Content` - 操作成功但无需返回数据（如 DELETE）
 
 **4xx 客户端错误**
+
 - `400 Bad Request` - 请求参数格式错误、验证失败
 - `401 Unauthorized` - 未认证或认证失败
 - `403 Forbidden` - 已认证但无权限访问
@@ -87,10 +89,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `422 Unprocessable Entity` - 业务逻辑错误（如余额不足）
 
 **5xx 服务器错误**
+
 - `500 Internal Server Error` - 服务器内部错误（如数据库连接失败）
 - `503 Service Unavailable` - 服务暂时不可用
 
 **重要原则**
+
 - ❌ 不使用业务状态码（如 40401、50001），完全依赖 HTTP 状态码
 - ❌ 不使用 1xx 状态码
 - ✅ 集合查询（列表）→ 空结果返回 `200 + []`
