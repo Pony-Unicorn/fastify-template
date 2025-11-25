@@ -7,4 +7,4 @@ export const CredentialsSchema = Type.Object({
   password: StringSchema
 })
 
-export interface Credentials extends Static<typeof CredentialsSchema> {}
+export type Credentials = Static<typeof CredentialsSchema>

@@ -32,8 +32,7 @@ export const UpdateCredentialsSchema = Type.Object({
   newPassword: PasswordSchema
 })
 
-export interface UpdateCredentials
-  extends Static<typeof UpdateCredentialsSchema> {}
+export type UpdateCredentials = Static<typeof UpdateCredentialsSchema>
 
 export const RegisterSchema = Type.Object({
   email: EmailSchema,
@@ -45,11 +44,11 @@ export const RegisterSchema = Type.Object({
   inviterCode: Type.Optional(Type.Number({ minimum: 1 }))
 })
 
-export interface Register extends Static<typeof RegisterSchema> {}
+export type Register = Static<typeof RegisterSchema>
 
 // User info querystring
 export const UserInfoQuerySchema = Type.Object({
   email: EmailSchema
 })
 
-export interface UserInfoQuery extends Static<typeof UserInfoQuerySchema> {}
+export type UserInfoQuery = Static<typeof UserInfoQuerySchema>
