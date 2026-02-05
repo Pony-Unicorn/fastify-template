@@ -11,7 +11,7 @@
     "test": "npm run build:ts && c8 node --test --import tsx \"test/**/*.ts\"",
     "test:dev": "c8 node --test --import tsx \"test/**/*.ts\"",
     "test:watch": "node --test --import tsx --watch \"test/**/*.ts\"",
-    "start": "npm run build:ts && fastify start -o dist/app.js",
+    "start": "fastify start -o dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
     "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",

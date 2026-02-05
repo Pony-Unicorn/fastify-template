@@ -69,7 +69,7 @@ pnpm dev
 
 - 查看当前有哪些包已过时 pnpm outdated
 - 升级到 semver 范围内的最新版本 pnpm up
-- 将依赖升级到最新版本 pnpm up -L axios
+- 将依赖升级到最新版本 pnpm up -L fastify
 
 ### 数据库操作
 
@@ -115,6 +115,16 @@ sql/
 建议在使用 AI 辅助开发前先阅读上述文件，确保输出符合项目规范。
 
 [更多查看](https://www.yuque.com/pony13500815917/computer/xt0tdduk7mpt5bdf?singleDoc)
+
+## Deployment
+- 编译代码 pnpm run build
+- 压缩包 tar -czvf release.tar.gz dist/ package.json pnpm-lock.yaml
+- 上传服务器 scp release.tar.gz 用户名@服务器IP:~/
+- 进入项目目录 cd /data/www/myapp
+- 删除 dist 目录 rm -rf ./dist
+- 解压并覆盖 tar -xzvf ~/release.tar.gz -C ./
+- 安装依赖 pnpm install --frozen-lockfile --prod
+- PM2 重载
 
 ## ✅ Todo List
 
