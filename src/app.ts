@@ -112,9 +112,7 @@ const serviceApp: FastifyPluginAsync<AppOptions> = async (
         'Resource not found'
       )
 
-      reply.code(404)
-
-      return { message: 'Not Found' }
+      return reply.notFound()
     }
   )
 }

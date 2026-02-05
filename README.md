@@ -37,7 +37,7 @@ pnpm dev
   - 参考 [RESTful API 设计参考文献列表](https://github.com/aisuhua/restful-api-design-references)
   - 参考 [good API design](https://www.seangoedecke.com/good-api-design/)
   - 注：采用实用主义 REST，不强制要求 HATEOAS
-- 认证采用 `Authorization: <type> <credentials>` 方式
+- 认证采用 `Authorization: <type> <credentials>` 方式（**计划中**）
   - Bearer、tma、personal_sign
 
 ### API 响应设计（GitHub API 风格）
@@ -191,12 +191,12 @@ GET /api/posts/123  // 特定的 post 不存在
   - 002-create-posts-indexes.sql # 创建索引
   - 003-posts-seed.sql
 - log 日志
-  - 如使用文件记录，请使用 logrotate 轮换日志，linux 默认安装
-  - 推荐线上程序日志路径 /var/log/app-name.log
+  - 本地开发和 PM2 部署默认使用项目根目录下的 `logs/` 目录。
+  - 如使用文件记录，请使用 logrotate 轮换日志，linux 默认安装。
 
 ## 命名
 
-- Repository 指与数据库交互的层，用来封装数据的访问逻辑，例如 userRepository
+- Repository 指与数据库交互的层，用来封装数据的访问逻辑，例如 `userRepository`。
 
 ## 📁 项目目录结构
 
@@ -214,8 +214,7 @@ src/
 
 ├── plugins/                 # Plugins Folder。fastify 核心思想，一切皆插件
 │   ├── app/                 # 内部插件：计划任务 xxx-repository、xxx-service 等
-│   ├── external/            # 外部的、第三方插件、例如 cors、env、数据库等
-│   └── other/               # 其他插件
+│   └── external/            # 外部的、第三方插件、例如 cors、env、数据库等
 
 ├── routes/                  # 路由（controller），service 和 model 放到 repository 中
 │   ├── api/                 # api 实现
@@ -303,9 +302,7 @@ sql/
 ## ✅ Todo List
 
 - [ ] husky
-- [ ] 添加 ai 相关文档
-- [ ] 增加对应的 mcp 服务
-- [ ] 更新 "plugins": ["@ianvs/prettier-plugin-sort-imports"]
+- [ ] 添加 ai 相关服务
 - [ ] 认证系统，验证登陆状态
 - [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
