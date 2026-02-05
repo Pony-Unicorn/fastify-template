@@ -52,7 +52,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   )
 
   fastify.post<{ Body: Register }>(
-    '/register',
+    '/',
     {
       config: {
         rateLimit: {
@@ -97,12 +97,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       reply.code(201)
-      return { message: 'successfully' }
+      return { message: 'User registered successfully' }
     }
   )
 
-  fastify.put<{ Body: UpdateCredentials }>(
-    '/update-password',
+  fastify.patch<{ Body: UpdateCredentials }>(
+    '/me/password',
     {
       config: {
         rateLimit: {
@@ -156,12 +156,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         return reply.internalServerError('Database error')
       }
 
-      return { message: 'successfully' }
+      return { message: 'Password updated successfully' }
     }
   )
 
   fastify.get<{ Querystring: UserInfoQuery }>(
-    '/info',
+    '/me',
     {
       schema: {
         querystring: UserInfoQuerySchema,
@@ -189,8 +189,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         email: user.value.email
       }
     }
-
-    // 验证登陆状态
   )
 }
 

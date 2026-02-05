@@ -50,12 +50,12 @@ pnpm dev
 
 ```typescript
 // ✅ 单个资源
-GET /api/users/info?email=user@example.com
+GET /api/users/me?email=user@example.com
 → HTTP 200
 → { "username": "john", "email": "user@example.com" }
 
 // ✅ 集合资源（列表） sort 默认 desc 降序排序
-GET /api/users/123/posts?page=2&page_size=20&sort=name:asc,created_at
+GET /api/users/?page=2&page_size=20&sort=name:asc,created_at
 → HTTP 200
 → { "items": [...], "total": 100, "page": 2, "pageSize": 20 }
 
@@ -65,7 +65,7 @@ GET /api/users/123/posts
 → { "items": [], "total": 0, "page": 1, "pageSize": 20 }
 
 // ✅ 创建成功
-POST /api/users/register
+POST /api/users/
 → HTTP 201
 → { "message": "User registered successfully" }
 ```
@@ -74,27 +74,27 @@ POST /api/users/register
 
 ```typescript
 // ❌ 资源不存在
-GET /api/users/info?email=notfound@example.com
+GET /api/users/me?email=notfound@example.com
 → HTTP 404
 → { "message": "User not found" }
 
 // ❌ 参数验证失败
-POST /api/users/register (invalid email)
+POST /api/users/ (invalid email)
 → HTTP 400
 → { "message": "body/email must match format \"email\"" }
 
 // ❌ 认证失败
-PUT /api/users/update-password (wrong password)
+PATCH /api/users/me/password (wrong password)
 → HTTP 401
 → { "message": "Invalid current password" }
 
 // ❌ 资源冲突
-POST /api/users/register (email already exists)
+POST /api/users/ (email already exists)
 → HTTP 409
 → { "message": "User already exists" }
 
 // ❌ 服务器错误
-GET /api/users/info (database error)
+GET /api/users/me (database error)
 → HTTP 500
 → { "message": "Internal Server Error" }
 ```
@@ -105,7 +105,7 @@ GET /api/users/info (database error)
 
 **2xx 成功**
 
-- `200 OK` - GET 请求成功，或 PUT/DELETE 操作完成（**推荐优先使用**）
+- `200 OK` - GET 请求成功，或 PUT/PATCH/DELETE 操作完成（**推荐优先使用**）
 - `201 Created` - POST 创建资源成功
 - `202 Accepted` - 请求已接受，但处理尚未完成（异步任务场景）
 - `204 No Content` - 操作成功但无需返回数据（如 DELETE）
