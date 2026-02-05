@@ -44,6 +44,9 @@ importers:
       fastify-cli:
         specifier: ^7.4.1
         version: 7.4.1
+      fastify-ip:
+        specifier: ^2.0.0
+        version: 2.0.0
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
@@ -1155,6 +1158,10 @@ packages:
   fastify-cli@7.4.1:
     resolution: {integrity: sha512-7Jsfj2uLuGWvnxjrGDrHWpSm65+OcVx0ZbTD2wwkz6Wt6KjGm6+ZYwwpdXdwAlzbJYq+LCEMNvDJc4485AQ1vQ==}
     hasBin: true
+
+  fastify-ip@2.0.0:
+    resolution: {integrity: sha512-7mQyAc7sapawpiriEFoJyQIs41nNIO42UCzgMKrjNGsIegnevj2VhOlXLLTa+q7cxXfJ5fDGmOAdQpaIgA9ObA==}
+    engines: {node: '>=20.x'}
 
   fastify-plugin@5.1.0:
     resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
@@ -3352,6 +3359,10 @@ snapshots:
       resolve-from: 5.0.0
       semver: 7.7.3
       yargs-parser: 22.0.0
+
+  fastify-ip@2.0.0:
+    dependencies:
+      fastify-plugin: 5.1.0
 
   fastify-plugin@5.1.0: {}
 

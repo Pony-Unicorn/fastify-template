@@ -22,8 +22,13 @@ const plugin: FastifyPluginAsync = async (fastify) => {
         return
       }
 
-      // Only allow origins in the allowlist
-      cb(null, CORS_ALLOW_LIST.has(origin))
+      // Reject origins not in the allowlist
+      if (!CORS_ALLOW_LIST.has(origin)) {
+        cb(new Error('Origin not allowed'), false)
+        return
+      }
+
+      cb(null, true)
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
