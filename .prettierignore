@@ -1,3 +1,11 @@
-node_modules
-dist
-pnpm-lock.yaml
+# 忽略所有文件
+*
+
+!src
+!src/**
+
+!scripts
+!scripts/**
+
+!types
+!types/**

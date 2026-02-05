@@ -1,10 +1,9 @@
-import fastifyIp from 'fastify-ip'
-import type { FastifyIPOptions } from 'fastify-ip'
 import { FastifyPluginAsync } from 'fastify'
+import type { FastifyIPOptions } from 'fastify-ip'
+import fastifyIp from 'fastify-ip'
 import fp from 'fastify-plugin'
 
 const plugin: FastifyPluginAsync<FastifyIPOptions> = async (fastify, opts) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await fastify.register(fastifyIp as any, opts)
 }
 
