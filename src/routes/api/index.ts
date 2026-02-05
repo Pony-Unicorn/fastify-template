@@ -12,6 +12,6 @@ export default async function (fastify: FastifyInstance) {
         }
       }
     },
-    () => ({ message: 'Welcome to the official fastify template!!!' })
+    () => ({ message: 'Welcome to the official fastify template!' })
   )
 }

@@ -1,4 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox'
+import { sql } from 'drizzle-orm'
 import { FastifyInstance } from 'fastify'
 
 export default async function (fastify: FastifyInstance) {
@@ -25,7 +26,7 @@ export default async function (fastify: FastifyInstance) {
       let dbConnected = false
       try {
         // 执行简单的数据库查询来验证连接
-        await fastify.db.execute('SELECT 1')
+        await fastify.db.execute(sql`SELECT 1`)
         dbConnected = true
       } catch (error) {
         fastify.log.error({ err: error }, 'Database health check failed')

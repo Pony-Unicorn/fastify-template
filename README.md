@@ -1,6 +1,6 @@
 # Fastify template
 
-一个基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（基于 Drizzle ORM）及严格的代码风格校验。
+基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（基于 Drizzle ORM）及严格的代码风格校验。
 
 ## ✨ 特性
 
@@ -12,6 +12,7 @@
 - 🌲 日志和错误友好处理（`@fastify/sensible`）
 - ✅ 严格类型、ESLint、Prettier 格式统一
 - 🚀 支持 `tsx` 无需构建直接运行
+- [编码规范](https://www.yuque.com/pony13500815917/computer/1556e1e356e8b8d24ea1540304921f61)
 
 ## 🚀 快速开始
 
@@ -53,10 +54,10 @@ GET /api/users/info?email=user@example.com
 → HTTP 200
 → { "username": "john", "email": "user@example.com" }
 
-// ✅ 集合资源（列表）
-GET /api/users/123/posts
+// ✅ 集合资源（列表） sort 默认 desc 降序排序
+GET /api/users/123/posts?page=2&page_size=20&sort=name:asc,created_at
 → HTTP 200
-→ { "items": [...], "total": 10, "page": 1, "pageSize": 20 }
+→ { "items": [...], "total": 100, "page": 2, "pageSize": 20 }
 
 // ✅ 空集合（用户存在但没有 posts）
 GET /api/users/123/posts
@@ -302,6 +303,9 @@ sql/
 ## ✅ Todo List
 
 - [ ] husky
+- [ ] 添加 ai 相关文档
+- [ ] 增加对应的 mcp 服务
+- [ ] 更新 "plugins": ["@ianvs/prettier-plugin-sort-imports"]
 - [ ] 认证系统，验证登陆状态
 - [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen

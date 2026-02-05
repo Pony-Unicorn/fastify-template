@@ -21,6 +21,7 @@ describe('Security', () => {
   })
 
   it('should handle CORS for disallowed origins', async (t) => {
+    process.env.CORS_ORIGINS = 'http://localhost:3000'
     const app = await build(t)
 
     const res = await app.inject({

@@ -3,7 +3,7 @@ import fp from 'fastify-plugin'
 import assert from 'node:assert'
 import { it } from 'node:test'
 
-import serviceApp from '../../dist/src/app.js'
+import serviceApp from '../../dist/app.js'
 
 it('should call errorHandler', async (t) => {
   const app = fastify()

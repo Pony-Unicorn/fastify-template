@@ -4,6 +4,7 @@ import { it } from 'node:test'
 import { build } from '../helper.js'
 
 it('should correctly handle CORS preflight requests', async (t) => {
+  process.env.CORS_ORIGINS = 'http://localhost:3000'
   const app = await build(t)
 
   const res = await app.inject({
