@@ -104,6 +104,18 @@ sql/
 └── 003-posts-seed.sql              # 其他迁移...
 ```
 
+## 🤖 AI Coding Support
+
+本项目已内置 AI coding 支持，适配常见开发工具与协作流程：
+
+- **Codex** — 通过 `AGENTS.md` 约束项目规范与工作流
+- **Claude Code** — 通过 `CLAUDE.md` 提供编码指引
+- **Gemini CLI** — 通过 `AGENTS.md` 约束项目规范与工作流
+
+建议在使用 AI 辅助开发前先阅读上述文件，确保输出符合项目规范。
+
+[更多查看](https://www.yuque.com/pony13500815917/computer/xt0tdduk7mpt5bdf?singleDoc)
+
 ## ✅ Todo List
 
 - [ ] husky
