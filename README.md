@@ -129,7 +129,6 @@ sql/
 ## ✅ Todo List
 
 - [ ] husky
-- [ ] 添加 ai 相关服务
 - [ ] 认证系统，验证登陆状态
 - [ ] 补充集成测试
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
