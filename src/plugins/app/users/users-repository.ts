@@ -6,6 +6,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { usersTable } from '../../../models/schema.js'
 import { type MySqlDBTransaction } from '../../../models/types.js'
 import { toResult } from '../../../utils/result.js'
+import { ok } from 'neverthrow'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -61,19 +62,17 @@ export function createUsersRepository(fastify: FastifyInstance) {
       if (users.isErr()) return users
       if (countResult.isErr()) return countResult
 
-      return toResult(
-        Promise.resolve({
-          items: users.value,
-          total: countResult.value
-        })
-      )
+      return ok({
+        items: users.value,
+        total: countResult.value
+      })
     },
 
     async updatePassword(email: string, hashedPassword: string) {
       return toResult(
         db
           .update(usersTable)
-          .set({ password: hashedPassword })
+          .set({ password: hashedPassword, updatedAt: sql`UNIX_TIMESTAMP()`, version: sql`version + 1` })
           .where(eq(usersTable.email, email))
       )
     },

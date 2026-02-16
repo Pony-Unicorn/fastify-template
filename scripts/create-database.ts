@@ -24,8 +24,15 @@ async function createDatabase() {
 }
 
 async function createDB(connection: Connection) {
+  const dbName = process.env.MYSQL_DATABASE
+  if (!dbName || !/^[a-zA-Z0-9_]+$/.test(dbName)) {
+    throw new Error(
+      `Invalid MYSQL_DATABASE value: "${dbName}". Only alphanumeric characters and underscores are allowed.`
+    )
+  }
+
   await connection.query(
-    `CREATE DATABASE IF NOT EXISTS \`${process.env.MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`
+    `CREATE DATABASE IF NOT EXISTS \`${dbName}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`
   )
   console.log(
     `Database ${process.env.MYSQL_DATABASE} created or already exists.`

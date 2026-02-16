@@ -21,7 +21,11 @@ describe('Security', () => {
   })
 
   it('should handle CORS for disallowed origins', async (t) => {
+    const originalCorsOrigins = process.env.CORS_ORIGINS
     process.env.CORS_ORIGINS = 'http://localhost:3000'
+    t.after(() => {
+      process.env.CORS_ORIGINS = originalCorsOrigins
+    })
     const app = await build(t)
 
     const res = await app.inject({
@@ -38,8 +42,12 @@ describe('Security', () => {
   })
 
   it('should enforce rate limiting on multiple requests', async (t) => {
+    const originalRateLimitMax = process.env.RATE_LIMIT_MAX
     // Set a low rate limit for testing
     process.env.RATE_LIMIT_MAX = '2'
+    t.after(() => {
+      process.env.RATE_LIMIT_MAX = originalRateLimitMax
+    })
 
     const app = await build(t)
 

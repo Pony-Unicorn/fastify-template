@@ -31,7 +31,7 @@ const plugin: FastifyPluginAsync = async (fastify) => {
       cb(null, true)
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
   })
 }
 

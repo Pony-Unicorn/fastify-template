@@ -6,10 +6,9 @@ export interface AppOptions
   extends FastifyServerOptions,
     Partial<AutoloadPluginOptions> {}
 // Pass --options via CLI arguments in command to enable these options.
-export const options: AppOptions = {
-  logger: {
-    transport: {
-      targets: [
+const logTargets = [
+  ...(process.env.NODE_ENV !== 'production'
+    ? [
         {
           target: 'pino-pretty',
           options: {
@@ -18,23 +17,30 @@ export const options: AppOptions = {
             ignore: 'pid,hostname'
           },
           level: 'debug'
-        },
-        {
-          target: 'pino/file',
-          options: { destination: './logs/info.log' },
-          level: 'info'
-        },
-        {
-          target: 'pino/file',
-          options: { destination: './logs/warn.log' },
-          level: 'warn'
-        },
-        {
-          target: 'pino/file',
-          options: { destination: './logs/error.log' },
-          level: 'error'
         }
       ]
+    : []),
+  {
+    target: 'pino/file',
+    options: { destination: './logs/info.log' },
+    level: 'info'
+  },
+  {
+    target: 'pino/file',
+    options: { destination: './logs/warn.log' },
+    level: 'warn'
+  },
+  {
+    target: 'pino/file',
+    options: { destination: './logs/error.log' },
+    level: 'error'
+  }
+]
+
+export const options: AppOptions = {
+  logger: {
+    transport: {
+      targets: logTargets
     }
   }
 }

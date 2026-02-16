@@ -4,8 +4,12 @@ import { it } from 'node:test'
 import { build } from '../helper.js'
 
 it('should be rate limited', async (t) => {
+  const originalRateLimitMax = process.env.RATE_LIMIT_MAX
   // Set a low rate limit for testing
   process.env.RATE_LIMIT_MAX = '4'
+  t.after(() => {
+    process.env.RATE_LIMIT_MAX = originalRateLimitMax
+  })
 
   const app = await build(t)
 
