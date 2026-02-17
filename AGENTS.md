@@ -49,6 +49,7 @@ version: sql`version + 1`
 - 插件注册需 `fastify.decorate('<name>Repository', ...)` 且 `dependencies: ['db']`
 
 ### 3) Route
+- `reply.xxx()` 错误提示保持简短（如 `'Authentication required'`、`'Not found'`），不要写长句
 - 使用 `FastifyPluginAsyncTypebox`
 - 输入存在时，必须声明 `body` / `querystring` / `params`
 - 必须声明 `response`（成功 + 错误）

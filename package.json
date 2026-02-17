@@ -48,9 +48,11 @@
   "license": "MIT",
   "dependencies": {
     "@fastify/autoload": "^6.0.0",
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/env": "^5.0.3",
     "@fastify/helmet": "^13.0.2",
+    "@fastify/jwt": "^10.0.0",
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/sensible": "^6.0.4",
     "@fastify/type-provider-typebox": "^6.1.0",
@@ -62,11 +64,11 @@
     "fastify-favicon": "^5.0.0",
     "fastify-ip": "^2.0.0",
     "fastify-plugin": "^5.1.0",
-    "mysql2": "^3.16.3",
+    "mysql2": "^3.17.2",
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1",
+    "@types/node": "22.13.14",
     "c8": "^10.1.2",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.2",

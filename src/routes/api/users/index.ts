@@ -8,10 +8,8 @@ import {
 import {
   Register,
   RegisterSchema,
-  UpdateCredentials,
-  UpdateCredentialsSchema,
-  UserInfoQuery,
-  UserInfoQuerySchema,
+  UpdatePassword,
+  UpdatePasswordSchema,
   UserInfoSchema,
   UsersListResponseSchema
 } from '../../../schemas/users.js'
@@ -101,7 +99,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     }
   )
 
-  fastify.patch<{ Body: UpdateCredentials }>(
+  fastify.patch<{ Body: UpdatePassword }>(
     '/me/password',
     {
       config: {
@@ -111,14 +109,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         }
       },
       schema: {
-        body: UpdateCredentialsSchema,
+        body: UpdatePasswordSchema,
         response: {
           200: MessageResponseSchema
         }
       }
     },
     async function (request, reply) {
-      const { newPassword, currentPassword, email } = request.body
+      const { newPassword, currentPassword } = request.body
+      const { email } = request.user
 
       const user = await usersRepository.findByEmail(email)
 
@@ -160,23 +159,24 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     }
   )
 
-  fastify.get<{ Querystring: UserInfoQuery }>(
+  fastify.get(
     '/me',
     {
       schema: {
-        querystring: UserInfoQuerySchema,
         response: {
           200: UserInfoSchema
         }
       }
     },
     async function (request, reply) {
-      log.debug(`user email: ${request.query.email}`)
+      const { email } = request.user
 
-      const user = await usersRepository.findByEmail(request.query.email)
+      log.debug(`user email: ${email}`)
+
+      const user = await usersRepository.findByEmail(email)
 
       if (user.isErr()) {
-        log.error(`Email ${request.query.email}, Error ${user.error.message}`)
+        log.error(`Email ${email}, Error ${user.error.message}`)
         return reply.internalServerError('Database error')
       }
 

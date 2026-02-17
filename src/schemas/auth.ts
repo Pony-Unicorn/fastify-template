@@ -8,3 +8,10 @@ export const CredentialsSchema = Type.Object({
 })
 
 export type Credentials = Static<typeof CredentialsSchema>
+
+export const JwtPayloadSchema = Type.Object({
+  id: Type.Integer({ minimum: 1 }),
+  email: EmailSchema
+})
+
+export type JwtPayload = Static<typeof JwtPayloadSchema>

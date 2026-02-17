@@ -7,13 +7,16 @@ declare module 'fastify' {
       DATABASE_URL: string
       RATE_LIMIT_MAX: number
       CORS_ORIGINS: string
+      JWT_SECRET: string
+      JWT_EXPIRES_IN: string
+      COOKIE_NAME: string
     }
   }
 }
 
 const schema = {
   type: 'object',
-  required: ['DATABASE_URL'],
+  required: ['DATABASE_URL', 'JWT_SECRET'],
   properties: {
     NODE_ENV: {
       type: 'string',
@@ -29,6 +32,17 @@ const schema = {
     CORS_ORIGINS: {
       type: 'string',
       default: '' // Comma-separated list
+    },
+    JWT_SECRET: {
+      type: 'string'
+    },
+    JWT_EXPIRES_IN: {
+      type: 'string',
+      default: '7d'
+    },
+    COOKIE_NAME: {
+      type: 'string',
+      default: 'token'
     }
   }
 }

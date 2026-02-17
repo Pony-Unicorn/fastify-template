@@ -1,12 +1,21 @@
 import { FastifyInstance } from 'fastify'
 
+const PUBLIC_ROUTES = [
+  'GET /api/',
+  'GET /api/health',
+  'POST /api/auth/login',
+  'POST /api/auth/logout',
+  'POST /api/users'
+]
+
 export default async function (fastify: FastifyInstance) {
   fastify.addHook('onRequest', async (request, reply) => {
-    // if (request.url.startsWith('/api/auth/login')) {
-    //   return
-    // }
-    // if (!request.session.user) {
-    //   reply.unauthorized('You must be authenticated to access this route.')
-    // }
+    const routeKey = `${request.method} ${request.url.split('?')[0]}`
+
+    if (PUBLIC_ROUTES.includes(routeKey)) {
+      return
+    }
+
+    await fastify.authenticate(request, reply)
   })
 }

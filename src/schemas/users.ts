@@ -26,13 +26,12 @@ export const UsersListResponseSchema = Type.Object({
   total: Type.Integer({ minimum: 0 })
 })
 
-export const UpdateCredentialsSchema = Type.Object({
-  email: EmailSchema,
+export const UpdatePasswordSchema = Type.Object({
   currentPassword: PasswordSchema,
   newPassword: PasswordSchema
 })
 
-export type UpdateCredentials = Static<typeof UpdateCredentialsSchema>
+export type UpdatePassword = Static<typeof UpdatePasswordSchema>
 
 export const RegisterSchema = Type.Object({
   email: EmailSchema,
@@ -45,10 +44,3 @@ export const RegisterSchema = Type.Object({
 })
 
 export type Register = Static<typeof RegisterSchema>
-
-// User info querystring
-export const UserInfoQuerySchema = Type.Object({
-  email: EmailSchema
-})
-
-export type UserInfoQuery = Static<typeof UserInfoQuerySchema>

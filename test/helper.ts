@@ -1,15 +1,15 @@
-import Fastify, { LightMyRequestResponse } from 'fastify'
+import Fastify, { InjectOptions, LightMyRequestResponse } from 'fastify'
 import assert from 'node:assert'
 import { TestContext } from 'node:test'
 
 import serviceApp from '../dist/app.js'
 
-// declare module 'fastify' {
-//   interface FastifyInstance {
-//     login: typeof login
-//     injectWithLogin: typeof injectWithLogin
-//   }
-// }
+declare module 'fastify' {
+  interface FastifyInstance {
+    login: typeof login
+    injectWithLogin: typeof injectWithLogin
+  }
+}
 
 // Fill in this config with all the configurations
 // needed for testing the application
@@ -29,41 +29,41 @@ export function expectValidationError(
   assert.strictEqual(message, expectedMessage)
 }
 
-// async function login(this: FastifyInstance, email: string) {
-//   const res = await this.inject({
-//     method: 'POST',
-//     url: '/api/auth/login',
-//     payload: {
-//       email,
-//       password: 'Password123$'
-//     }
-//   })
+async function login(this: FastifyInstance, email: string) {
+  const res = await this.inject({
+    method: 'POST',
+    url: '/api/auth/login',
+    payload: {
+      email,
+      password: 'Password123$'
+    }
+  })
 
-//   const cookie = res.cookies.find((c) => c.name === this.config.COOKIE_NAME)
+  const cookie = res.cookies.find((c) => c.name === this.config.COOKIE_NAME)
 
-//   if (!cookie) {
-//     throw new Error('Failed to retrieve session cookie.')
-//   }
+  if (!cookie) {
+    throw new Error('Failed to retrieve session cookie.')
+  }
 
-//   return cookie.value
-// }
+  return cookie.value
+}
 
-// async function injectWithLogin(
-//   this: FastifyInstance,
-//   email: string,
-//   opts: InjectOptions
-// ) {
-//   const cookieValue = await this.login(email)
+async function injectWithLogin(
+  this: FastifyInstance,
+  email: string,
+  opts: InjectOptions
+) {
+  const cookieValue = await this.login(email)
 
-//   opts.cookies = {
-//     ...opts.cookies,
-//     [this.config.COOKIE_NAME]: cookieValue
-//   }
+  opts.cookies = {
+    ...opts.cookies,
+    [this.config.COOKIE_NAME]: cookieValue
+  }
 
-//   return this.inject({
-//     ...opts
-//   })
-// }
+  return this.inject({
+    ...opts
+  })
+}
 
 // automatically build and tear down our instance
 export async function build(t?: TestContext) {
@@ -75,8 +75,8 @@ export async function build(t?: TestContext) {
   await app.register(serviceApp)
 
   // This is after start, so we can't decorate the instance using `.decorate`
-  // app.login = login
-  // app.injectWithLogin = injectWithLogin
+  app.login = login
+  app.injectWithLogin = injectWithLogin
 
   await app.ready()
 
