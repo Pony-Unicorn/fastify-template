@@ -1,12 +1,10 @@
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
-import { and, eq, sql } from 'drizzle-orm'
-
-import { usersTable } from '../../../models/schema.js'
-import { type MySqlDBTransaction } from '../../../models/types.js'
-import { toResult } from '../../../utils/result.js'
+import { sql } from 'kysely'
 import { ok } from 'neverthrow'
+
+import { toResult } from '../../../utils/result.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -15,22 +13,18 @@ declare module 'fastify' {
 }
 
 export function createUsersRepository(fastify: FastifyInstance) {
-  const db = fastify.db
+  const db = fastify.kysely
 
   return {
-    async findByEmail(email: string, trx?: MySqlDBTransaction) {
+    async findByEmail(email: string) {
       return toResult(
-        (trx ?? db)
-          .select({
-            id: usersTable.id,
-            username: usersTable.username,
-            password: usersTable.password,
-            email: usersTable.email
-          })
-          .from(usersTable)
-          .where(and(eq(usersTable.email, email), eq(usersTable.isDeleted, 0)))
-          .limit(1)
-          .then((users) => users[0] ?? null)
+        db
+          .selectFrom('users')
+          .select(['id', 'username', 'password', 'email'])
+          .where('email', '=', email)
+          .where('is_deleted', '=', 0)
+          .executeTakeFirst()
+          .then((user) => user ?? null)
       )
     },
 
@@ -41,21 +35,20 @@ export function createUsersRepository(fastify: FastifyInstance) {
       const [users, countResult] = await Promise.all([
         toResult(
           db
-            .select({
-              username: usersTable.username,
-              email: usersTable.email
-            })
-            .from(usersTable)
-            .where(eq(usersTable.isDeleted, 0))
+            .selectFrom('users')
+            .select(['username', 'email'])
+            .where('is_deleted', '=', 0)
             .limit(pageSize)
             .offset(offset)
+            .execute()
         ),
         toResult(
           db
-            .select({ count: sql<number>`count(*)` })
-            .from(usersTable)
-            .where(eq(usersTable.isDeleted, 0))
-            .then((result) => result[0].count)
+            .selectFrom('users')
+            .select(db.fn.count<number>('id').as('count'))
+            .where('is_deleted', '=', 0)
+            .executeTakeFirstOrThrow()
+            .then((result) => Number(result.count))
         )
       ])
 
@@ -71,9 +64,14 @@ export function createUsersRepository(fastify: FastifyInstance) {
     async updatePassword(email: string, hashedPassword: string) {
       return toResult(
         db
-          .update(usersTable)
-          .set({ password: hashedPassword, updatedAt: sql`UNIX_TIMESTAMP()`, version: sql`version + 1` })
-          .where(eq(usersTable.email, email))
+          .updateTable('users')
+          .set({
+            password: hashedPassword,
+            updated_at: sql<number>`unixepoch()`,
+            version: sql<number>`version + 1`
+          })
+          .where('email', '=', email)
+          .execute()
       )
     },
 
@@ -84,14 +82,17 @@ export function createUsersRepository(fastify: FastifyInstance) {
       inviterCode?: number
     }) {
       return toResult(
-        db.insert(usersTable).values({
-          email: userData.email,
-          username: userData.username,
-          password: userData.password,
-          inviterCode: userData.inviterCode,
-          createdAt: sql`UNIX_TIMESTAMP()`,
-          updatedAt: sql`UNIX_TIMESTAMP()`
-        })
+        db
+          .insertInto('users')
+          .values({
+            email: userData.email,
+            username: userData.username,
+            password: userData.password,
+            inviter_code: userData.inviterCode ?? null,
+            created_at: sql<number>`unixepoch()`,
+            updated_at: sql<number>`unixepoch()`
+          })
+          .execute()
       )
     }
   }
@@ -104,6 +105,6 @@ export default fp(
   },
   {
     name: 'users-repository',
-    dependencies: ['db']
+    dependencies: ['kysely']
   }
 )

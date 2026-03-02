@@ -14,7 +14,7 @@ if (Number(process.env.CAN_MIGRATE_DATABASE) !== 1) {
   )
 }
 
-async function migrate() {
+async function rollback() {
   const sqlite = new BetterSqlite3(process.env.DATABASE_URL!)
   sqlite.pragma('journal_mode = WAL')
   sqlite.pragma('foreign_keys = ON')
@@ -32,16 +32,16 @@ async function migrate() {
     })
   })
 
-  const { error, results } = await migrator.migrateToLatest()
+  const { error, results } = await migrator.migrateDown()
 
   if (!results || results.length === 0) {
-    console.log('No pending migrations to run.')
+    console.log('No migrations to roll back.')
   } else {
     for (const result of results) {
       if (result.status === 'Success') {
-        console.log(`✓ Migration "${result.migrationName}" executed successfully`)
+        console.log(`✓ Rolled back migration "${result.migrationName}" successfully`)
       } else if (result.status === 'Error') {
-        console.error(`✗ Migration "${result.migrationName}" failed`)
+        console.error(`✗ Rollback of migration "${result.migrationName}" failed`)
       }
     }
   }
@@ -49,11 +49,9 @@ async function migrate() {
   await db.destroy()
 
   if (error) {
-    console.error('Failed to run migrations:', error)
+    console.error('Failed to roll back migration:', error)
     process.exit(1)
   }
-
-  console.log('All migrations completed successfully.')
 }
 
-migrate()
+rollback()

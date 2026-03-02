@@ -6,6 +6,6 @@
     "sourceMap": true,
     "declaration": true
   },
-  "include": ["types", "src/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["test/**/*", "dist/**/*"]
 }

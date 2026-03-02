@@ -2,7 +2,7 @@ import fastifyUnderPressure from '@fastify/under-pressure'
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
-import { sql } from 'drizzle-orm'
+import { sql } from 'kysely'
 
 export const autoConfig = (fastify: FastifyInstance) => {
   return {
@@ -14,7 +14,7 @@ export const autoConfig = (fastify: FastifyInstance) => {
     retryAfter: 50,
     healthCheck: async () => {
       try {
-        await fastify.db.execute(sql`SELECT 1`)
+        await sql`SELECT 1`.execute(fastify.kysely)
         return true
         /* c8 ignore start */
       } catch (err) {
@@ -37,5 +37,5 @@ export const autoConfig = (fastify: FastifyInstance) => {
  * @see {@link https://www.youtube.com/watch?v=VI29mUA8n9w}
  */
 export default fp(fastifyUnderPressure, {
-  dependencies: ['db']
+  dependencies: ['kysely']
 })

@@ -1,13 +1,13 @@
 # Fastify template
 
-基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（基于 Drizzle ORM）及严格的代码风格校验。
+基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（基于 Kysely + SQLite）及严格的代码风格校验。
 
 ## ✨ 特性
 
 - ⚡ 极速的 Fastify 框架
 - 🧱 TypeBox 类型推导 + 校验一体化
 - 🔐 Helmet + CORS + Rate Limit 安全方案
-- 📊 Drizzle ORM + MySQL 支持
+- 📊 Kysely + SQLite（better-sqlite3）支持
 - 🔌 插件自动加载机制
 - 🌲 日志和错误友好处理（`@fastify/sensible`）
 - ✅ 严格类型、ESLint、Prettier 格式统一
@@ -34,7 +34,7 @@ pnpm dev
 
 ### 核心要点简述
 - **API 风格**: 遵循 RESTful 语义与 GitHub API 响应风格。
-- **数据库**: 使用 Drizzle ORM + Repository 模式。
+- **数据库**: 使用 Kysely + Repository 模式。
 - **校验**: 全程 TypeBox 类型安全保障。
 - **命名**: 路由使用 kebab-case，SQL 文件带三位编号。
 
@@ -79,28 +79,47 @@ pnpm run db:create
 # 2. 初始化表结构（执行 000-init.sql）
 pnpm run db:init
 
-# 3. 运行数据库迁移（执行所有未执行的 SQL 文件）
+# 3. 运行数据库迁移（执行所有未执行的迁移）
 pnpm run db:migrate
 
-# 4. 插入种子数据
+# 4. 回滚最近一次迁移
+pnpm run db:rollback
+
+# 5. 插入种子数据
 pnpm run db:seed
 ```
 
-**数据库迁移说明：**
+**数据库迁移说明（基于 [Kysely Migrator](https://kysely.dev/docs/migrations)）：**
 
-- 迁移文件位于 `sql/` 目录，命名格式：`<三位数编号>-<语义化文件名>.sql`
-- 迁移按文件名顺序执行（000、001、002...）
-- 系统会自动追踪已执行的迁移，避免重复执行
-- 需要在 `.env` 文件中设置相应的环境变量（`CAN_MIGRATE_DATABASE=1`）才能运行迁移
+- 迁移文件位于 `migrations/` 目录，命名格式：`<三位数编号>_<语义化文件名>.ts`
+- 迁移按文件名字母顺序执行（000、001、002...）
+- 每个迁移文件须导出 `up()` 和 `down()` 函数
+- Kysely 自动在数据库中记录已执行的迁移（`kysely_migration` 表），避免重复执行
+- 需要在 `.env` 文件中设置 `CAN_MIGRATE_DATABASE=1` 才能运行迁移
+- `db:rollback` 回滚最近一次已执行的迁移（调用对应的 `down()` 函数）
 
 **迁移文件示例：**
 
 ```
-sql/
-├── 000-init.sql                    # 初始化基础表
-├── 001-create-posts-table.sql     # 创建文章表
-├── 002-create-posts-indexes.sql   # 添加文章表索引
-└── 003-posts-seed.sql              # 其他迁移...
+migrations/
+├── 000_init_users.ts             # 初始化 users 表
+├── 001_create_posts_table.ts     # 创建 posts 表
+├── 002_create_posts_indexes.ts   # 添加 posts 表索引
+└── 003_add_tags_table.ts         # 后续迁移...
+```
+
+**新建迁移文件模板：**
+
+```typescript
+import { type Kysely } from 'kysely'
+
+export async function up(db: Kysely<unknown>): Promise<void> {
+  // 正向迁移
+}
+
+export async function down(db: Kysely<unknown>): Promise<void> {
+  // 回滚操作
+}
 ```
 
 ## 🤖 AI Coding Support
@@ -128,3 +147,4 @@ sql/
 ## ✅ Todo List
 
 - [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
+- [x] 数据库迁移 https://kysely.dev/

@@ -1,8 +1,7 @@
-import { sql } from 'drizzle-orm'
-import { drizzle, type MySql2Database } from 'drizzle-orm/mysql2'
-import mysql, { type Pool } from 'mysql2/promise'
+import BetterSqlite3 from 'better-sqlite3'
+import { Kysely, SqliteDialect, sql } from 'kysely'
 
-import { usersTable } from '../src/models/schema.js'
+import { type DB } from '../src/types/db.js'
 import { scryptHash } from '../src/plugins/app/password-manager.js'
 
 if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
@@ -12,12 +11,11 @@ if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
 }
 
 async function seed() {
-  const pool = mysql.createPool({
-    uri: process.env.DATABASE_URL!
-  })
+  const sqlite = new BetterSqlite3(process.env.DATABASE_URL!)
+  sqlite.pragma('foreign_keys = ON')
 
-  const db = drizzle({
-    client: pool
+  const db = new Kysely<DB>({
+    dialect: new SqliteDialect({ database: sqlite })
   })
 
   try {
@@ -25,13 +23,11 @@ async function seed() {
   } catch (error) {
     console.error('Error seeding database:', error)
   } finally {
-    await pool.end()
+    await db.destroy()
   }
 }
 
-async function seedUsers(
-  db: MySql2Database<Record<string, never>> & { $client: Pool }
-) {
+async function seedUsers(db: Kysely<DB>) {
   const users = [
     { username: 'basic', email: 'basic@example.com' },
     { username: 'moderator', email: 'moderator@example.com' },
@@ -40,18 +36,18 @@ async function seedUsers(
   const hash = await scryptHash('Password123$')
 
   for (const user of users) {
-    const result = await db.insert(usersTable).values({
-      username: user.username,
-      email: user.email,
-      password: hash,
-      createdAt: sql`UNIX_TIMESTAMP()`,
-      updatedAt: sql`UNIX_TIMESTAMP()`
-    })
+    const result = await db
+      .insertInto('users')
+      .values({
+        username: user.username,
+        email: user.email,
+        password: hash,
+        created_at: sql<number>`unixepoch()`,
+        updated_at: sql<number>`unixepoch()`
+      })
+      .executeTakeFirstOrThrow()
 
-    // MySQL2 返回的 insertId 在 result 对象中
-    const userId = (result as unknown as [{ insertId: number }])[0].insertId
-
-    console.log(`User ${userId} has been seeded successfully.`)
+    console.log(`User ${Number(result.insertId)} has been seeded successfully.`)
   }
 
   console.log('Users have been seeded successfully.')
