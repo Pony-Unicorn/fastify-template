@@ -20,6 +20,7 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier . --list-different",
     "format-fix": "prettier . --write",
+    "util:hash": "tsx ./scripts/hash-password.ts",
     "db:create": "tsx --env-file=.env ./scripts/create-database.ts",
     "db:seed": "tsx --env-file=.env ./scripts/seed-database.ts",
     "db:types": "kysely-codegen --dialect sqlite --env-file .env"
