@@ -15,7 +15,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "npm run build && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch\" \"npm:dev:start\"",
-    "dev:start": "fastify start --ignore-watch=.ts$ -w -o dist/app.js",
+    "dev:start": "DOTENV_QUIET=true fastify start --ignore-watch=.ts$ -w -o dist/app.js",
     "lint": "eslint --ignore-pattern=dist",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier . --list-different",
@@ -36,12 +36,7 @@
     "restful",
     "typebox",
     "kysely",
-    "sqlite",
-    "validation",
-    "security",
-    "cors",
-    "helmet",
-    "rate-limit"
+    "sqlite"
   ],
   "author": "Pony",
   "license": "MIT",
