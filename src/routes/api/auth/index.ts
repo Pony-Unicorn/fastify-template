@@ -61,7 +61,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       const token = fastify.jwt.sign({
-        id: user.value.id,
+        id: user.value.id!,
         email: user.value.email
       })
 
