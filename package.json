@@ -25,7 +25,7 @@
     "db:migrate": "tsx --env-file=.env ./scripts/migrate-database.ts",
     "db:seed": "tsx --env-file=.env ./scripts/seed-database.ts",
     "db:rollback": "tsx --env-file=.env ./scripts/rollback-database.ts",
-    "db:types": "kysely-codegen --dialect sqlite --env-file .env --out-file src/types/db.ts"
+    "db:types": "kysely-codegen --dialect sqlite --env-file .env"
   },
   "keywords": [
     "fastify",

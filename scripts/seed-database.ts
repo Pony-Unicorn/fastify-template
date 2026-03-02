@@ -1,7 +1,7 @@
 import BetterSqlite3 from 'better-sqlite3'
 import { Kysely, SqliteDialect, sql } from 'kysely'
 
-import { type DB } from '../src/types/db.js'
+import { type DB } from 'kysely-codegen'
 import { scryptHash } from '../src/plugins/app/password-manager.js'
 
 if (Number(process.env.CAN_SEED_DATABASE) !== 1) {

@@ -4,7 +4,7 @@ import fp from 'fastify-plugin'
 import BetterSqlite3 from 'better-sqlite3'
 import { Kysely, SqliteDialect, sql } from 'kysely'
 
-import { type DB } from '../../types/db.js'
+import { type DB } from 'kysely-codegen'
 
 declare module 'fastify' {
   export interface FastifyInstance {
