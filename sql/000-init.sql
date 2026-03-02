@@ -6,7 +6,7 @@
 -- 作者: Pony
 -- ============================================
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   username TEXT NOT NULL,
   password TEXT NOT NULL,

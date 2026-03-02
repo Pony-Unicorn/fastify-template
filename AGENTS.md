@@ -61,14 +61,14 @@
 2. 参考同类：至少阅读 1 个同类文件（Route/Repository 改动需对应参考）
 3. 实施修改：只改与当前任务直接相关内容
 4. 执行验证：
-   - 改 `src/` 或 `test/` 的 TS 代码：必须执行 `npm run build:ts`
+   - 改 `src/` 或 `test/` 的 TS 代码：必须执行 `npm run build`
    - 涉及业务逻辑/Route/Repository 行为改动：必须执行 `npm test`
-   - 改构建或配置契约（如 `package.json` / `tsconfig*` / `.env.example`）：至少执行 `npm run build:ts`，必要时 `npm test`
+   - 改构建或配置契约（如 `package.json` / `tsconfig*` / `.env.example`）：至少执行 `npm run build`，必要时 `npm test`
 5. 结构化回复：按"交付格式"输出
 
 ## 常用命令（AI 可执行）
 - `npm run dev`
-- `npm run build:ts`
+- `npm run build`
 - `npm test`
 - `npm run lint` / `npm run lint:fix`
 - `npm run format` / `npm run format-fix`
