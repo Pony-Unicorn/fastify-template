@@ -4,6 +4,7 @@ declare module 'fastify' {
   export interface FastifyInstance {
     config: {
       NODE_ENV: string
+      PORT: number
       DATABASE_URL: string
       RATE_LIMIT_MAX: number
       CORS_ORIGINS: string
@@ -21,6 +22,10 @@ const schema = {
     NODE_ENV: {
       type: 'string',
       default: 'development'
+    },
+    PORT: {
+      type: 'number',
+      default: 3000
     },
     DATABASE_URL: {
       type: 'string'
@@ -42,7 +47,7 @@ const schema = {
     },
     COOKIE_NAME: {
       type: 'string',
-      default: 'token'
+      default: 'session_id'
     }
   }
 }
@@ -62,11 +67,6 @@ export const autoConfig = {
 
 /**
  * Environment variables plugin for application runtime configuration.
- *
- * Only includes variables used in the application code.
- * Script-only variables (CAN_*) are accessed directly via process.env.
- * Fastify CLI variables (PORT, LOG_LEVEL, etc.) are handled automatically.
- *
  * @see {@link https://github.com/fastify/fastify-env}
  */
 export default env

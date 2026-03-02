@@ -4,12 +4,13 @@
 
 ## ✨ 特性
 
-- ⚡ 极速的 Fastify 框架
+- ⚡ 极速的 Fastify 框架（独立模式，无 fastify-cli）
 - 🧱 TypeBox 类型推导 + 校验一体化
 - 🔐 Helmet + CORS + Rate Limit 安全方案
 - 📊 Kysely + SQLite（better-sqlite3）支持
 - 🔌 插件自动加载机制
-- 🌲 日志和错误友好处理（`@fastify/sensible`）
+- 🌲 日志和错误友好处理（`@fastify/sensible` + pino）
+- 🛑 `close-with-grace` 优雅退出
 - ✅ 严格类型、ESLint、Prettier 格式统一
 - 🚀 支持 `tsx` 无需构建直接运行
 
@@ -105,14 +106,14 @@ pnpm run db:seed
 [更多查看](https://www.yuque.com/pony13500815917/computer/xt0tdduk7mpt5bdf?singleDoc)
 
 ## Deployment
-- 编译代码 pnpm run build
-- 压缩包 tar -czvf release.tar.gz dist/ package.json pnpm-lock.yaml
-- 上传服务器 scp release.tar.gz 用户名@服务器IP:~/
-- 进入项目目录 cd /data/www/myapp
-- 删除 dist 目录 rm -rf ./dist
-- 解压并覆盖 tar -xzvf ~/release.tar.gz -C ./
-- 安装依赖 pnpm install --frozen-lockfile --prod
-- PM2 重载
+- 编译代码 `pnpm run build`
+- 压缩包 `tar -czvf release.tar.gz dist/ package.json pnpm-lock.yaml`
+- 上传服务器 `scp release.tar.gz 用户名@服务器IP:~/`
+- 进入项目目录 `cd /data/www/myapp`
+- 删除 dist 目录 `rm -rf ./dist`
+- 解压并覆盖 `tar -xzvf ~/release.tar.gz -C ./`
+- 安装依赖 `pnpm install --frozen-lockfile --prod`
+- PM2 重载（入口：`dist/server.js`）
 
 ## ✅ Todo List
 

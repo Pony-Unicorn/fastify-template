@@ -19,6 +19,7 @@
 
 ## 技术栈与目录约定
 - 框架：Fastify + TypeScript
+- 入口：`src/server.ts`（`close-with-grace` 优雅退出）；`src/app.ts` 注册插件和路由
 - 校验：TypeBox（`@fastify/type-provider-typebox`）
 - ORM / Query Builder：Kysely（SQLite / better-sqlite3）
 - DB 类型：`kysely-codegen` 自动生成，import 路径 `from 'kysely-codegen'`
@@ -26,6 +27,8 @@
 - 错误处理：`@fastify/sensible` + `neverthrow`
 
 关键目录：
+- `src/server.ts`：应用入口，创建 Fastify 实例、监听端口
+- `src/app.ts`：插件 / 路由 autoload，错误处理器
 - `src/routes/api/`：路由层（只做请求编排）
 - `src/plugins/app/`：Repository / 业务插件
 - `src/plugins/external/`：第三方插件（kysely/env/cors 等）
