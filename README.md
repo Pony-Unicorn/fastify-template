@@ -1,6 +1,6 @@
 # Fastify template
 
-基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（基于 Kysely + SQLite）及严格的代码风格校验。
+基于 [Fastify](https://fastify.dev) 的现代 TypeScript 后端开发模板，内置多种常用插件和开发工具，支持模块化、类型安全、编程式 SQL 构建（Kysely + SQLite）及严格的代码风格校验。
 
 ## ✨ 特性
 
@@ -73,54 +73,24 @@ pnpm dev
 ### 数据库操作
 
 ```bash
-# 1. 创建数据库
+# 1. 创建数据库文件
 pnpm run db:create
 
-# 2. 初始化表结构（执行 000-init.sql）
-pnpm run db:init
+# 2. 用 GUI 或 CLI 工具执行 sql/ 目录下的 .sql 文件建表
+#    例：sqlite3 ./data/app.db < sql/000-init.sql
 
-# 3. 运行数据库迁移（执行所有未执行的迁移）
-pnpm run db:migrate
+# 3. 生成 Kysely 类型（需数据库已存在）
+pnpm run db:types
 
-# 4. 回滚最近一次迁移
-pnpm run db:rollback
-
-# 5. 插入种子数据
+# 4. 插入种子数据（仅开发环境）
 pnpm run db:seed
 ```
 
-**数据库迁移说明（基于 [Kysely Migrator](https://kysely.dev/docs/migrations)）：**
+**Schema 管理说明：**
 
-- 迁移文件位于 `migrations/` 目录，命名格式：`<三位数编号>_<语义化文件名>.ts`
-- 迁移按文件名字母顺序执行（000、001、002...）
-- 每个迁移文件须导出 `up()` 和 `down()` 函数
-- Kysely 自动在数据库中记录已执行的迁移（`kysely_migration` 表），避免重复执行
-- 需要在 `.env` 文件中设置 `CAN_MIGRATE_DATABASE=1` 才能运行迁移
-- `db:rollback` 回滚最近一次已执行的迁移（调用对应的 `down()` 函数）
-
-**迁移文件示例：**
-
-```
-migrations/
-├── 000_init_users.ts             # 初始化 users 表
-├── 001_create_posts_table.ts     # 创建 posts 表
-├── 002_create_posts_indexes.ts   # 添加 posts 表索引
-└── 003_add_tags_table.ts         # 后续迁移...
-```
-
-**新建迁移文件模板：**
-
-```typescript
-import { type Kysely } from 'kysely'
-
-export async function up(db: Kysely<unknown>): Promise<void> {
-  // 正向迁移
-}
-
-export async function down(db: Kysely<unknown>): Promise<void> {
-  // 回滚操作
-}
-```
+- `sql/` 目录是表结构的唯一来源，命名格式：`<三位数编号>-<语义化文件名>.sql`
+- 使用 GUI 工具（TablePlus、DB Browser）或 `sqlite3` CLI 直接执行 `.sql` 文件
+- 表结构变更时同步更新对应 `.sql` 文件，然后重新运行 `db:types` 刷新类型
 
 ## 🤖 AI Coding Support
 

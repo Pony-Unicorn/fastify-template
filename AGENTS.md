@@ -20,8 +20,9 @@
 ## 技术栈与目录约定
 - 框架：Fastify + TypeScript
 - 校验：TypeBox（`@fastify/type-provider-typebox`）
-- ORM / Query Builder：Kysely（SQLite / better-sqlite3，`src/types/db.ts` 定义 `Database` 接口）
-- 数据库迁移：Kysely Migrator（`migrations/` 目录，`.ts` 文件，含 `up` / `down` 函数）
+- ORM / Query Builder：Kysely（SQLite / better-sqlite3）
+- DB 类型：`kysely-codegen` 自动生成，import 路径 `from 'kysely-codegen'`
+- Schema 管理：`sql/` 目录存放原始 `.sql` 文件，通过 GUI / CLI 工具执行
 - 错误处理：`@fastify/sensible` + `neverthrow`
 
 关键目录：
@@ -29,7 +30,8 @@
 - `src/plugins/app/`：Repository / 业务插件
 - `src/plugins/external/`：第三方插件（kysely/env/cors 等）
 - `src/schemas/`：请求/响应 Schema
-- `src/types/`：TypeScript 类型定义（`db.ts` 含 Kysely Database 接口）
+- `sql/`：数据库表结构 SQL 文件（唯一 Schema 来源）
+- `scripts/`：`create-database.ts`、`seed-database.ts`
 - `test/`：测试
 
 ## 实现标准

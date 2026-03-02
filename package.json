@@ -1,6 +1,6 @@
 {
   "name": "fastify-template",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern Fastify TypeScript backend template with TypeBox validation, Drizzle ORM, built-in security plugins, and RESTful API design following GitHub API conventions.",
   "main": "app.ts",
   "type": "module",
@@ -21,10 +21,7 @@
     "format": "prettier . --list-different",
     "format-fix": "prettier . --write",
     "db:create": "tsx --env-file=.env ./scripts/create-database.ts",
-    "db:init": "tsx --env-file=.env ./scripts/init-tables.ts",
-    "db:migrate": "tsx --env-file=.env ./scripts/migrate-database.ts",
     "db:seed": "tsx --env-file=.env ./scripts/seed-database.ts",
-    "db:rollback": "tsx --env-file=.env ./scripts/rollback-database.ts",
     "db:types": "kysely-codegen --dialect sqlite --env-file .env"
   },
   "keywords": [

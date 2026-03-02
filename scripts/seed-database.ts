@@ -4,12 +4,6 @@ import { Kysely, SqliteDialect, sql } from 'kysely'
 import { type DB } from 'kysely-codegen'
 import { scryptHash } from '../src/plugins/app/password-manager.js'
 
-if (Number(process.env.CAN_SEED_DATABASE) !== 1) {
-  throw new Error(
-    "You can't seed the database. Set `CAN_SEED_DATABASE=1` environment variable to allow this operation."
-  )
-}
-
 async function seed() {
   const sqlite = new BetterSqlite3(process.env.DATABASE_URL!)
   sqlite.pragma('foreign_keys = ON')
