@@ -7,19 +7,20 @@ export default async function serviceApp(
   opts: FastifyPluginOptions
 ) {
   await fastify.register(fastifyAutoload, {
-    dir: path.join(import.meta.dirname, 'plugins/external')
+    dir: path.join(import.meta.dirname, 'plugins/external'),
+    options: {}
   })
 
   fastify.register(fastifyAutoload, {
     dir: path.join(import.meta.dirname, 'plugins/app'),
-    options: opts
+    options: { ...opts }
   })
 
   fastify.register(fastifyAutoload, {
     dir: path.join(import.meta.dirname, 'routes'),
     autoHooks: true,
     cascadeHooks: true,
-    options: opts
+    options: { ...opts }
   })
 
   fastify.setErrorHandler((err: FastifyError, request, reply) => {
