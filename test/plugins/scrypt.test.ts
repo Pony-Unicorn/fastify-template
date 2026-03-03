@@ -1,26 +1,48 @@
 import Fastify from 'fastify'
 import assert from 'node:assert'
-import { test } from 'node:test'
+import { describe, it } from 'node:test'
 
 import passwordManagerPlugin from '../../src/plugins/app/password-manager.js'
 
-test('password-manager: hash and compare', async (t) => {
-  const app = Fastify({ logger: false })
-  app.register(passwordManagerPlugin)
-  await app.ready()
-  t.after(() => app.close())
+describe('password-manager plugin', () => {
+  it('hash returns a string', async (t) => {
+    const app = Fastify({ logger: false })
+    app.register(passwordManagerPlugin)
+    await app.ready()
+    t.after(() => app.close())
 
-  const password = 'test_password'
-  const { passwordManager } = app
+    const hash = await app.passwordManager.hash('test_password')
+    assert.strictEqual(typeof hash, 'string')
+  })
 
-  const hash = await passwordManager.hash(password)
-  assert.strictEqual(typeof hash, 'string')
+  it('compare returns true for correct password', async (t) => {
+    const app = Fastify({ logger: false })
+    app.register(passwordManagerPlugin)
+    await app.ready()
+    t.after(() => app.close())
 
-  const isValid = await passwordManager.compare(password, hash)
-  assert.ok(isValid)
+    const hash = await app.passwordManager.hash('test_password')
+    const isValid = await app.passwordManager.compare('test_password', hash)
+    assert.ok(isValid)
+  })
 
-  const isInvalid = await passwordManager.compare('wrong_password', hash)
-  assert.ok(!isInvalid)
+  it('compare returns false for wrong password', async (t) => {
+    const app = Fastify({ logger: false })
+    app.register(passwordManagerPlugin)
+    await app.ready()
+    t.after(() => app.close())
 
-  await assert.rejects(() => passwordManager.compare(password, 'malformed_hash'))
+    const hash = await app.passwordManager.hash('test_password')
+    const isInvalid = await app.passwordManager.compare('wrong_password', hash)
+    assert.ok(!isInvalid)
+  })
+
+  it('compare rejects on malformed hash', async (t) => {
+    const app = Fastify({ logger: false })
+    app.register(passwordManagerPlugin)
+    await app.ready()
+    t.after(() => app.close())
+
+    await assert.rejects(() => app.passwordManager.compare('test_password', 'malformed_hash'))
+  })
 })

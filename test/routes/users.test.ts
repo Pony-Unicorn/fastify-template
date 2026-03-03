@@ -27,6 +27,22 @@ describe('GET /api/users', () => {
     assert.ok(typeof payload.page === 'number')
     assert.ok(typeof payload.pageSize === 'number')
   })
+
+  it('respects pagination query parameters', async (t) => {
+    const app = await build(t)
+
+    const res = await app.injectWithLogin('basic@example.com', {
+      method: 'GET',
+      url: '/api/users?page=1&page_size=2'
+    })
+
+    assert.strictEqual(res.statusCode, 200)
+    const payload = JSON.parse(res.payload)
+    assert.ok(Array.isArray(payload.items))
+    assert.ok(payload.items.length <= 2)
+    assert.strictEqual(payload.page, 1)
+    assert.strictEqual(payload.pageSize, 2)
+  })
 })
 
 describe('POST /api/users', () => {
@@ -82,6 +98,18 @@ describe('POST /api/users', () => {
       method: 'POST',
       url: '/api/users',
       payload: { email: 'valid@example.com', username: 'testuser', password: 'weak' }
+    })
+
+    assert.strictEqual(res.statusCode, 400)
+  })
+
+  it('returns 400 for missing username', async (t) => {
+    const app = await build(t)
+
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/users',
+      payload: { email: 'valid@example.com', password: 'Password123$' }
     })
 
     assert.strictEqual(res.statusCode, 400)
@@ -147,5 +175,26 @@ describe('PATCH /api/users/me/password', () => {
     })
 
     assert.strictEqual(res.statusCode, 401)
+  })
+
+  it('returns 200 on successful password update', async (t) => {
+    const app = await build(t)
+
+    // Register a fresh user to avoid polluting shared seed users
+    const email = `pwtest_${Date.now()}@example.com`
+    await app.inject({
+      method: 'POST',
+      url: '/api/users',
+      payload: { email, username: 'pwtest', password: 'Password123$' }
+    })
+
+    const res = await app.injectWithLogin(email, {
+      method: 'PATCH',
+      url: '/api/users/me/password',
+      payload: { currentPassword: 'Password123$', newPassword: 'NewPassword456!' }
+    })
+
+    assert.strictEqual(res.statusCode, 200)
+    assert.deepStrictEqual(JSON.parse(res.payload), { message: 'Password updated successfully' })
   })
 })

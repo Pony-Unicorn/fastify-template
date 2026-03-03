@@ -15,7 +15,7 @@
 - 禁止在 `src/schemas/` 导入数据库模型
 - 禁止重复定义 `src/schemas/common.ts` 已有基础 Schema
 - 禁止在应用代码直接读取 `process.env`（必须通过 `fastify.config`）
-- 禁止主动执行数据库生命周期命令（`npm run db:*`），除非用户明确要求
+- 禁止主动执行数据库生命周期命令（`pnpm run db:*`），除非用户明确要求
 
 ## 技术栈与目录约定
 - 框架：Fastify + TypeScript
@@ -64,17 +64,17 @@
 2. 参考同类：至少阅读 1 个同类文件（Route/Repository 改动需对应参考）
 3. 实施修改：只改与当前任务直接相关内容
 4. 执行验证：
-   - 改 `src/` 或 `test/` 的 TS 代码：必须执行 `npm run build`
-   - 涉及业务逻辑/Route/Repository 行为改动：必须执行 `npm test`
-   - 改构建或配置契约（如 `package.json` / `tsconfig*` / `.env.example`）：至少执行 `npm run build`，必要时 `npm test`
+   - 改 `src/` 或 `test/` 的 TS 代码：必须执行 `pnpm run build`
+   - 涉及业务逻辑/Route/Repository 行为改动：必须执行 `pnpm test`
+   - 改构建或配置契约（如 `package.json` / `tsconfig*` / `.env.example`）：至少执行 `pnpm run build`，必要时 `pnpm test`
 5. 结构化回复：按"交付格式"输出
 
 ## 常用命令（AI 可执行）
-- `npm run dev`
-- `npm run build`
-- `npm test`
-- `npm run lint` / `npm run lint:fix`
-- `npm run format` / `npm run format-fix`
+- `pnpm run dev`
+- `pnpm run build`
+- `pnpm test`
+- `pnpm run lint` / `pnpm run lint:fix`
+- `pnpm run format` / `pnpm run format-fix`
 
 ## 交付格式（实施改动时必须）
 ```text
