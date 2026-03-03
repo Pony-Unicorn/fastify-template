@@ -2,9 +2,7 @@ import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
 import { sql } from 'kysely'
-import { ok } from 'neverthrow'
-
-import { toResult } from '../../../utils/result.js'
+import { paginateResults, toResult } from '../../../utils/result.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -32,7 +30,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
       const { page, pageSize } = options
       const offset = (page - 1) * pageSize
 
-      const [users, countResult] = await Promise.all([
+      return paginateResults(
         toResult(
           db
             .selectFrom('users')
@@ -50,15 +48,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
             .executeTakeFirstOrThrow()
             .then((result) => Number(result.count))
         )
-      ])
-
-      if (users.isErr()) return users
-      if (countResult.isErr()) return countResult
-
-      return ok({
-        items: users.value,
-        total: countResult.value
-      })
+      )
     },
 
     async updatePassword(email: string, hashedPassword: string) {

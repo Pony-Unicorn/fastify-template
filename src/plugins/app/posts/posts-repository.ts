@@ -2,9 +2,7 @@ import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
 import { sql } from 'kysely'
-import { ok } from 'neverthrow'
-
-import { toResult } from '../../../utils/result.js'
+import { paginateResults, toResult } from '../../../utils/result.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -44,7 +42,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
       const { page, pageSize } = options
       const offset = (page - 1) * pageSize
 
-      const [posts, countResult] = await Promise.all([
+      return paginateResults(
         toResult(
           db
             .selectFrom('posts')
@@ -65,12 +63,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
             .executeTakeFirstOrThrow()
             .then((r) => Number(r.count))
         )
-      ])
-
-      if (posts.isErr()) return posts
-      if (countResult.isErr()) return countResult
-
-      return ok({ items: posts.value, total: countResult.value })
+      )
     },
 
     async create(userId: number, data: { title: string; content: string }) {

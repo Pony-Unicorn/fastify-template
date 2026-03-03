@@ -16,6 +16,30 @@ import {
   UpdatePostSchema
 } from '../../../schemas/posts.js'
 
+function mapPostToDto(p: {
+  id: number
+  user_id: number
+  title: string
+  content: string
+  status: string
+  view_count: number
+  created_at: number
+  updated_at: number
+  published_at: number | null
+}) {
+  return {
+    id: p.id,
+    userId: p.user_id,
+    title: p.title,
+    content: p.content,
+    status: p.status,
+    viewCount: p.view_count,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+    publishedAt: p.published_at
+  }
+}
+
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { postsRepository, log } = fastify
 
@@ -41,17 +65,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
 
       return {
-        items: result.value.items.map((p) => ({
-          id: p.id,
-          userId: p.user_id,
-          title: p.title,
-          content: p.content,
-          status: p.status,
-          viewCount: p.view_count,
-          createdAt: p.created_at,
-          updatedAt: p.updated_at,
-          publishedAt: p.published_at ?? null
-        })),
+        items: result.value.items.map(mapPostToDto),
         page,
         pageSize,
         total: result.value.total
@@ -81,19 +95,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         return reply.internalServerError('Database error')
       }
 
-      const p = result.value
       reply.code(201)
-      return {
-        id: p.id,
-        userId: p.user_id,
-        title: p.title,
-        content: p.content,
-        status: p.status,
-        viewCount: p.view_count,
-        createdAt: p.created_at,
-        updatedAt: p.updated_at,
-        publishedAt: p.published_at ?? null
-      }
+      return mapPostToDto(result.value)
     }
   )
 
@@ -123,18 +126,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         return reply.notFound('Post not found')
       }
 
-      const p = result.value
-      return {
-        id: p.id,
-        userId: p.user_id,
-        title: p.title,
-        content: p.content,
-        status: p.status,
-        viewCount: p.view_count,
-        createdAt: p.created_at,
-        updatedAt: p.updated_at,
-        publishedAt: p.published_at ?? null
-      }
+      return mapPostToDto(result.value)
     }
   )
 

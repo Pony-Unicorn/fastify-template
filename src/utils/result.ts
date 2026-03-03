@@ -37,6 +37,22 @@ export const safeJsonParse = <T = unknown>(text: string): Result<T, Error> =>
   safeSync(() => JSON.parse(text))
 
 /**
+ * 并行执行两个分页查询，合并为 { items, total } 结果
+ */
+export const paginateResults = <T>(
+  itemsResult: ResultAsync<T[], Error>,
+  countResult: ResultAsync<number, Error>
+): ResultAsync<{ items: T[]; total: number }, Error> =>
+  fromPromise(
+    Promise.all([itemsResult, countResult]).then(([items, count]) => {
+      if (items.isErr()) throw items.error
+      if (count.isErr()) throw count.error
+      return { items: items.value, total: count.value }
+    }),
+    normalizeError
+  )
+
+/**
  * 高级包装器：支持 Side Effect (日志/上报) 和自定义错误转换
  * 返回 ResultAsync 以支持链式调用
  */
