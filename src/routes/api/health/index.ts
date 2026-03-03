@@ -1,6 +1,7 @@
 import { Type } from '@fastify/type-provider-typebox'
-import { sql } from 'kysely'
 import { FastifyInstance } from 'fastify'
+import { sql } from 'kysely'
+import { version } from '../../../config/app.js'
 
 export default async function (fastify: FastifyInstance) {
   fastify.get(
@@ -10,6 +11,7 @@ export default async function (fastify: FastifyInstance) {
         response: {
           200: Type.Object({
             status: Type.String(),
+            version: Type.String(),
             timestamp: Type.String(),
             uptime: Type.Number(),
             database: Type.Optional(
@@ -32,6 +34,7 @@ export default async function (fastify: FastifyInstance) {
 
       return {
         status: 'ok',
+        version,
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         database: {
