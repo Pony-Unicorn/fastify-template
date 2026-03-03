@@ -117,4 +117,4 @@ pnpm run db:seed
 
 ## ✅ Todo List
 
-- [ ] 使用命令行生成 zod 验证，使用 https://github.com/sinclairzx81/typebox-codegen
+- [ ] 
