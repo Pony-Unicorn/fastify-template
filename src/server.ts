@@ -14,15 +14,31 @@ function getLoggerTargets() {
   if (process.stdout.isTTY) {
     targets.push({
       target: 'pino-pretty',
-      options: { colorize: true, translateTime: 'HH:MM:ss Z', ignore: 'pid,hostname' },
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname'
+      },
       level: 'debug'
     })
   }
 
   targets.push(
-    { target: 'pino/file', options: { destination: './logs/info.log' }, level: 'info' },
-    { target: 'pino/file', options: { destination: './logs/warn.log' }, level: 'warn' },
-    { target: 'pino/file', options: { destination: './logs/error.log' }, level: 'error' }
+    {
+      target: 'pino/file',
+      options: { destination: './logs/info.log' },
+      level: 'info'
+    },
+    {
+      target: 'pino/file',
+      options: { destination: './logs/warn.log' },
+      level: 'warn'
+    },
+    {
+      target: 'pino/file',
+      options: { destination: './logs/error.log' },
+      level: 'error'
+    }
   )
 
   return targets
@@ -43,7 +59,7 @@ const app = Fastify({
 
 app.register(fp(serviceApp))
 
-closeWithGrace({ delay: 500 }, async ({ err }) => {
+closeWithGrace({ delay: 1000 }, async ({ err }) => {
   if (err != null) app.log.error(err)
   await app.close()
 })

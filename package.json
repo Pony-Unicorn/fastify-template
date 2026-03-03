@@ -4,14 +4,10 @@
   "description": "A modern Fastify TypeScript backend template with TypeBox validation, Drizzle ORM, built-in security plugins, and RESTful API design following GitHub API conventions.",
   "main": "app.ts",
   "type": "module",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
-    "watch": "tsc -w",
-    "dev": "tsx --env-file=.env ./src/server.ts",
+    "dev": "tsx watch --env-file=.env ./src/server.ts",
     "test": "c8 -r=text -r=html -r=lcov glob -c \"tsx --test\" \"./test/**/*.ts\"",
     "lint": "eslint --ignore-pattern=dist",
     "lint:fix": "pnpm run lint -- --fix",
