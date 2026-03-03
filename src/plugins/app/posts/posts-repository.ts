@@ -34,7 +34,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
           .selectFrom('posts')
           .select(POST_COLUMNS)
           .where('id', '=', id)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
           .executeTakeFirst()
           .then((post) => post ?? null)
       )
@@ -50,7 +50,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
             .selectFrom('posts')
             .select(POST_COLUMNS)
             .where('status', '=', 'published')
-            .where('is_deleted', '=', 0)
+            .where('deleted_at', 'is', null)
             .orderBy('published_at', 'desc')
             .limit(pageSize)
             .offset(offset)
@@ -61,7 +61,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
             .selectFrom('posts')
             .select(db.fn.count<number>('id').as('count'))
             .where('status', '=', 'published')
-            .where('is_deleted', '=', 0)
+            .where('deleted_at', 'is', null)
             .executeTakeFirstOrThrow()
             .then((r) => Number(r.count))
         )
@@ -110,7 +110,7 @@ export function createPostsRepository(fastify: FastifyInstance) {
           })
           .where('id', '=', id)
           .where('user_id', '=', userId)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
           .execute()
       )
     },
@@ -120,14 +120,13 @@ export function createPostsRepository(fastify: FastifyInstance) {
         db
           .updateTable('posts')
           .set({
-            is_deleted: 1,
             deleted_at: sql<number>`unixepoch()`,
             updated_at: sql<number>`unixepoch()`,
             version: sql<number>`version + 1`
           })
           .where('id', '=', id)
           .where('user_id', '=', userId)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
           .execute()
       )
     }

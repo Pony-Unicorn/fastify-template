@@ -13,11 +13,9 @@ CREATE TABLE IF NOT EXISTS users (
   inviter_code INTEGER DEFAULT NULL,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
-  deleted_at INTEGER NOT NULL DEFAULT 0,
-  is_deleted INTEGER NOT NULL DEFAULT 0,
+  deleted_at INTEGER DEFAULT NULL,
   version INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_inviter_code ON users (inviter_code);
-CREATE INDEX IF NOT EXISTS idx_is_deleted ON users (is_deleted);

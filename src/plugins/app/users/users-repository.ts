@@ -22,7 +22,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
           .selectFrom('users')
           .select(['id', 'username', 'password', 'email'])
           .where('email', '=', email)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
           .executeTakeFirst()
           .then((user) => user ?? null)
       )
@@ -37,7 +37,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
           db
             .selectFrom('users')
             .select(['username', 'email'])
-            .where('is_deleted', '=', 0)
+            .where('deleted_at', 'is', null)
             .limit(pageSize)
             .offset(offset)
             .execute()
@@ -46,7 +46,7 @@ export function createUsersRepository(fastify: FastifyInstance) {
           db
             .selectFrom('users')
             .select(db.fn.count<number>('id').as('count'))
-            .where('is_deleted', '=', 0)
+            .where('deleted_at', 'is', null)
             .executeTakeFirstOrThrow()
             .then((result) => Number(result.count))
         )

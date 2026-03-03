@@ -1,7 +1,7 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
-import { MessageResponseSchema } from '../../../schemas/common.js'
 import { Credentials, CredentialsSchema } from '../../../schemas/auth.js'
+import { MessageResponseSchema } from '../../../schemas/common.js'
 import { getCookieDomain } from '../../../utils/cookie.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {

@@ -46,11 +46,11 @@
 
 ### 2) Kysely 类型
 - DB 类型始终从 `'kysely-codegen'` 直接导入，`pnpm run db:types` 由用户手动执行
-- `INTEGER PRIMARY KEY` 可能被生成为 `Generated<number | null>`（select 类型为 `number | null`）；在需要 `number` 的调用处用 `!` 非空断言，**不创建类型修复文件**
-- SQL 索引名必须带表名前缀（如 `idx_posts_is_deleted`，不能用 `idx_is_deleted`），防止跨表冲突；索引 DDL 必须使用 `IF NOT EXISTS`
+- `INTEGER PRIMARY KEY` 通常生成为 `Generated<number>`；若 codegen 输出 `Generated<number | null>`，在需要 `number` 的调用处用 `!` 非空断言，**不创建类型修复文件**
+- SQL 索引名必须带表名前缀（如 `idx_posts_user_id`，不能用 `idx_user_id`），防止跨表冲突；索引 DDL 必须使用 `IF NOT EXISTS`
 
 ### 3) Repository
-- 删除使用软删除：`.set({ is_deleted: 1, deleted_at: sql\`unixepoch()\` })`
+- 软删除：`.set({ deleted_at: sql\`unixepoch()\` })`，存活条件：`.where('deleted_at', 'is', null)`；`deleted_at` 无需加索引（低选择性）
 - UNIQUE 约束冲突须在 Route 层检测并返回 409：`error.message.includes('UNIQUE constraint failed')`
 
 ### 4) Route
@@ -149,7 +149,7 @@ export function createXxxRepository(fastify) {
         db.selectFrom('xxx')
           .selectAll()
           .where('id', '=', id)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
           .executeTakeFirst()
       )
     },
@@ -162,7 +162,20 @@ export function createXxxRepository(fastify) {
             version: sql<number>`version + 1`
           })
           .where('id', '=', id)
-          .where('is_deleted', '=', 0)
+          .where('deleted_at', 'is', null)
+          .execute()
+      )
+    },
+    softDelete(id: number) {
+      return toResult(
+        db.updateTable('xxx')
+          .set({
+            deleted_at: sql<number>`unixepoch()`,
+            updated_at: sql<number>`unixepoch()`,
+            version: sql<number>`version + 1`
+          })
+          .where('id', '=', id)
+          .where('deleted_at', 'is', null)
           .execute()
       )
     }
