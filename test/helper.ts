@@ -1,22 +1,14 @@
 import Fastify, { InjectOptions, LightMyRequestResponse } from 'fastify'
+import fp from 'fastify-plugin'
 import assert from 'node:assert'
 import { TestContext } from 'node:test'
 
-import serviceApp from '../dist/app.js'
+import serviceApp from '../src/app.js'
 
 declare module 'fastify' {
   interface FastifyInstance {
     login: typeof login
     injectWithLogin: typeof injectWithLogin
-  }
-}
-
-// Fill in this config with all the configurations
-// needed for testing the application
-export function config() {
-  return {
-    skipOverride: true, // Register our application with fastify-plugin
-    typescript: true
   }
 }
 
@@ -33,10 +25,7 @@ async function login(this: FastifyInstance, email: string) {
   const res = await this.inject({
     method: 'POST',
     url: '/api/auth/login',
-    payload: {
-      email,
-      password: 'Password123$'
-    }
+    payload: { email, password: 'Password123$' }
   })
 
   const cookie = res.cookies.find((c) => c.name === this.config.COOKIE_NAME)
@@ -60,27 +49,27 @@ async function injectWithLogin(
     [this.config.COOKIE_NAME]: cookieValue
   }
 
-  return this.inject({
-    ...opts
-  })
+  return this.inject({ ...opts })
 }
 
-// automatically build and tear down our instance
 export async function build(t?: TestContext) {
   const app = Fastify({
-    logger: false
+    logger: false,
+    ajv: {
+      customOptions: {
+        coerceTypes: 'array',
+        removeAdditional: 'all'
+      }
+    }
   })
 
-  // Register the application
-  await app.register(serviceApp)
+  await app.register(fp(serviceApp))
 
-  // This is after start, so we can't decorate the instance using `.decorate`
   app.login = login
   app.injectWithLogin = injectWithLogin
 
   await app.ready()
 
-  // If we pass the test contest, it will close the app after we are done
   if (t) {
     t.after(() => app.close())
   }
