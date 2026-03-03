@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
   version INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_inviter_code ON users (inviter_code);
-CREATE INDEX IF NOT EXISTS idx_is_deleted ON users (is_deleted)
+CREATE INDEX IF NOT EXISTS idx_is_deleted ON users (is_deleted);

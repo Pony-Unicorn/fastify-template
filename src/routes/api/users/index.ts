@@ -13,9 +13,11 @@ import {
   UserInfoSchema,
   UsersListResponseSchema
 } from '../../../schemas/users.js'
+import { getCookieDomain } from '../../../utils/cookie.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
-  const { usersRepository, passwordManager, log } = fastify
+  const { usersRepository, passwordManager, log, config } = fastify
+  const cookieDomain = getCookieDomain(config.CORS_ORIGINS)
 
   fastify.get<{ Querystring: PagingQueryString }>(
     '/',
@@ -90,6 +92,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       })
 
       if (createResult.isErr()) {
+        if (createResult.error.message.includes('UNIQUE constraint failed')) {
+          return reply.conflict('User already exists')
+        }
         log.error(`Failed to create user: ${createResult.error.message}`)
         return reply.internalServerError('Database error')
       }
@@ -154,6 +159,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         log.error(`Failed to update password: ${updateResult.error.message}`)
         return reply.internalServerError('Database error')
       }
+
+      // Invalidate current session by clearing the JWT cookie
+      reply.clearCookie(config.COOKIE_NAME, {
+        path: '/',
+        ...(cookieDomain && { domain: cookieDomain })
+      })
 
       return { message: 'Password updated successfully' }
     }

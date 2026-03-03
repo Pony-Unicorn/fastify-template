@@ -16,6 +16,7 @@
 - 禁止重复定义 `src/schemas/common.ts` 已有基础 Schema
 - 禁止在应用代码直接读取 `process.env`（必须通过 `fastify.config`）
 - 禁止主动执行数据库生命周期命令（`pnpm run db:*`），除非用户明确要求
+- 禁止创建任何类型包装层（如 `src/types/db.ts`）来修改 `kysely-codegen` 的输出；DB 类型只从 `'kysely-codegen'` 直接导入
 
 ## 技术栈与目录约定
 - 框架：Fastify + TypeScript
@@ -43,14 +44,22 @@
 - 本地导入必须带 `.js` 扩展名
 - 实现前必须先检索仓库现有实现；新增文件必须在回复中标明"新建 + 理由"
 
-### 2) Repository
-- 删除使用软删除：`.set({ is_deleted: 1 })`
+### 2) Kysely 类型
+- DB 类型始终从 `'kysely-codegen'` 直接导入，`pnpm run db:types` 由用户手动执行
+- `INTEGER PRIMARY KEY` 可能被生成为 `Generated<number | null>`（select 类型为 `number | null`）；在需要 `number` 的调用处用 `!` 非空断言，**不创建类型修复文件**
+- SQL 索引名必须带表名前缀（如 `idx_posts_is_deleted`，不能用 `idx_is_deleted`），防止跨表冲突；索引 DDL 必须使用 `IF NOT EXISTS`
 
-### 3) Route
+### 3) Repository
+- 删除使用软删除：`.set({ is_deleted: 1, deleted_at: sql\`unixepoch()\` })`
+- UNIQUE 约束冲突须在 Route 层检测并返回 409：`error.message.includes('UNIQUE constraint failed')`
+
+### 4) Route
 - `reply.xxx()` 错误提示保持简短（如 `'Authentication required'`、`'Not found'`），不要写长句
 - 输入存在时，必须声明 `body` / `querystring` / `params`
+- Cookie 工具函数统一使用 `src/utils/cookie.ts` 中的 `getCookieDomain()`
+- 公开路由分两类：静态路由加入 `PUBLIC_ROUTES`（按实际 URL 匹配）；含路径参数的动态路由加入 `PUBLIC_ROUTE_PATTERNS`（按 `request.routeOptions.url` 路由模板匹配）
 
-### 4) Schema
+### 5) Schema
 - 新建 Schema 前先复用 `src/schemas/common.ts`
 - 优先复用：`MessageResponseSchema`、`PagingQueryStringSchema`、`PagingInfoSchema` 等
 - 专用错误结构仅在以下任一条件为 `true` 时允许：

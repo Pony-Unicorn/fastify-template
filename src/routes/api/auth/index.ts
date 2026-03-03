@@ -2,20 +2,7 @@ import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 
 import { MessageResponseSchema } from '../../../schemas/common.js'
 import { Credentials, CredentialsSchema } from '../../../schemas/auth.js'
-
-function getCookieDomain(corsOrigins: string): string | undefined {
-  for (const origin of corsOrigins.split(',')) {
-    try {
-      const { hostname } = new URL(origin.trim())
-      if (hostname === 'localhost' || /^\d/.test(hostname)) continue
-      const parts = hostname.split('.')
-      if (parts.length >= 2) return '.' + parts.slice(-2).join('.')
-    } catch {
-      continue
-    }
-  }
-  return undefined
-}
+import { getCookieDomain } from '../../../utils/cookie.js'
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   const { usersRepository, passwordManager, log, config } = fastify
