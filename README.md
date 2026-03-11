@@ -117,4 +117,4 @@ pnpm run db:seed
 
 ## ✅ Todo List
 
-- [ ] 
+- [ ] 集成官方的 skill https://github.com/mcollina/skills
