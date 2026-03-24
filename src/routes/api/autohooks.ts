@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify'
 
 // Static public routes matched against the actual request URL
 const PUBLIC_ROUTES = [
-  'GET /api/',
+  'GET /api',
   'GET /api/health',
   'POST /api/auth/login',
   'POST /api/auth/logout',
