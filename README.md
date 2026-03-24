@@ -70,6 +70,7 @@ pnpm dev
 - 查看当前有哪些包已过时 pnpm outdated
 - 升级到 semver 范围内的最新版本 pnpm up
 - 将依赖升级到最新版本 pnpm up -L fastify
+- 以为官方 [demo](https://github.com/fastify/demo/blob/main/package.json) 为标准
 
 ### 数据库操作
 

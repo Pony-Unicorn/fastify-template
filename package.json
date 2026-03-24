@@ -45,13 +45,13 @@
     "@fastify/type-provider-typebox": "^6.1.0",
     "@fastify/under-pressure": "^9.0.3",
     "@sinclair/typebox": "^0.34.48",
-    "better-sqlite3": "^12.6.2",
+    "better-sqlite3": "^12.8.0",
     "close-with-grace": "^2.5.0",
-    "fastify": "^5.7.4",
+    "fastify": "^5.8.4",
     "fastify-favicon": "^5.0.0",
     "fastify-ip": "^2.0.0",
     "fastify-plugin": "^5.1.0",
-    "kysely": "^0.28.11",
+    "kysely": "^0.28.14",
     "neverthrow": "^8.2.0"
   },
   "devDependencies": {
